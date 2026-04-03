@@ -1,0 +1,110 @@
+﻿@using SV22T1020362.Models.Catalog
+@model PagedResult<Product>
+@{
+    Layout = null;
+    int orderID = ViewBag.OrderID;
+}
+<div class="modal-header">
+    <strong class="modal-title">
+        <i class="bi bi-search me-1"></i>
+        Thêm mặt hàng vào đơn hàng
+    </strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+    <!-- Form tìm kiếm — submit bằng JS, không navigate -->
+    <div class="mb-3">
+        <div class="input-group">
+            <input type="text" id="searchValueInDetail"
+                   class="form-control"
+                   placeholder="Tên mặt hàng cần tìm..." autofocus
+                   onkeydown="if(event.key==='Enter'){searchInDetail(null,1);return false;}" />
+            <button type="button" class="btn btn-info" onclick="searchInDetail(null, 1)">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Kết quả tìm kiếm -->
+    <div id="searchResultInDetail">
+        <div class="text-center py-2"><span>Đang tải...</span></div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>
+
+<script>
+    // TODO: Script này chạy được nhờ execModalScripts() trong site.js
+    // (FIX lỗi "Scripts inserted via innerHTML are not executed")
+
+    const _orderID = @orderID;
+    const _pageSize = 5;
+
+    /**
+     * Tìm kiếm mặt hàng — fetch HTML rồi nhét vào div, không navigate
+     * Hiển thị các mặt hàng tìm kiếm có thể thêm vào đơn hàng trong modal Thêm mặt hàng
+     * param {Event|null} event
+     * param {number} page - Trang cần tải
+     */
+    function searchInDetail(event, page) {
+        if (event) event.preventDefault();
+        const searchValue = document.getElementById('searchValueInDetail')?.value || '';
+        const container = document.getElementById('searchResultInDetail');
+        if (!container) return;
+
+        container.innerHTML = '<div class="text-center py-2"><span>Đang tải...</span></div>';
+
+        const params = new URLSearchParams({
+            orderID: _orderID,
+            searchValue: searchValue,
+            pageSize: _pageSize,
+            page: page || 1
+        });
+
+        fetch('/Order/SearchProductInDetail?' + params.toString())
+            .then(res => res.text())
+            .then(html => { container.innerHTML = html; })
+            .catch(() => { container.innerHTML = '<p class="text-danger">Không tải được dữ liệu</p>'; });
+    }
+
+    /**
+     * Thêm mặt hàng vào đơn qua AJAX
+     * param {Event} event
+     * param {HTMLFormElement} form
+     */
+    function addOrderItemFromModal(event, form) {
+        event.preventDefault();
+        fetch('/Order/AddOrderItem', {
+            method: 'POST',
+            body: new FormData(form)
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.code !== 1) { alert(result.message || 'Không thể thêm mặt hàng'); return; }
+            // Đóng modal
+            const modalEl = document.getElementById('dialogModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            // Reload danh sách mặt hàng trang Detail
+            if (typeof loadOrderDetails === 'function') loadOrderDetails();
+        })
+        .catch(() => alert('Không thể thêm mặt hàng'));
+    }
+
+    /**
+     * Phân trang trong modal tìm kiếm mặt hàng
+     * param {number} page
+     */
+    function paginateInDetail(page) {
+        searchInDetail(null, page);
+    }
+
+    // TODO: FIX - Thay document.addEventListener('DOMContentLoaded', ...) bằng gọi trực tiếp
+    // vì khi script chạy qua execModalScripts(), DOMContentLoaded đã fire từ trước rồi,
+    // nên event này sẽ không bao giờ được trigger nữa.
+    // Gọi searchInDetail ngay khi script được thực thi (sau khi modal đã render xong).
+    searchInDetail(null, 1);
+</script>

@@ -1,0 +1,90 @@
+﻿@using SV22T1020362.Models.Sales
+@model PagedResult<OrderViewInfo>
+@{
+    Layout = null;
+}
+<div class="mb-2 text-muted">
+    Danh sách này có <strong>@Model.RowCount</strong> đơn hàng
+</div>
+
+<div class="card">
+    <div class="card-body p-1">
+        <table class="table table-bordered table-hover mb-0 align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Ngày đặt hàng</th>
+                    <th>Tên khách hàng</th>
+                    <th>Điện thoại</th>
+                    <th>Ngày duyệt</th>
+                    <th>Nhân viên xử lý</th>
+                    <th class="text-center" style="width:140px;">Trạng thái</th>
+                    <th class="text-center" style="width:40px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.DataItems)
+                {
+                    <tr>
+                        <td>@item.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.CustomerPhone</td>
+                        <td>
+                            @(item.AcceptTime.HasValue? item.AcceptTime.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                        </td>
+                        <td>@item.EmployeeName</td>
+                        <td class="text-center">
+                            @{
+                                var (badgeClass, badgeText) = item.Status switch
+                                {
+                                    OrderStatusEnum.New => ("bg-warning text-dark", "Chờ duyệt"),
+                                    OrderStatusEnum.Accepted => ("bg-info text-dark", "Đã duyệt"),
+                                    OrderStatusEnum.Shipping => ("bg-primary", "Đang giao"),
+                                    OrderStatusEnum.Completed => ("bg-success", "Hoàn tất"),
+                                    OrderStatusEnum.Cancelled => ("bg-secondary", "Đã hủy"),
+                                    OrderStatusEnum.Rejected => ("bg-danger", "Từ chối"),
+                                    _ => ("bg-secondary", "Không xác định")
+                                };
+                            }
+                            <span class="badge @badgeClass">@badgeText</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="~/Order/Detail/@item.OrderID" class="btn btn-sm btn-primary">
+                                <i class="bi bi-receipt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer">
+        <ul class="pagination justify-content-center mb-0">
+            @foreach (var p in Model.GetDisplayPages())
+            {
+                if (p.IsCurrent)
+                {
+                    <li class="page-item active">
+                        <a class="page-link">@p.Page</a>
+                    </li>
+                }
+                else if (p.IsEllipsis)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link">...</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="javascript:;"
+                           onclick="paginationSearch(event, document.getElementById('formSearch'), @p.Page)">
+                            @p.Page
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>

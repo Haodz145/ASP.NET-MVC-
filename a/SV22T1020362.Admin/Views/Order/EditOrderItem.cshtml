@@ -1,0 +1,89 @@
+﻿@using SV22T1020362.Models.Sales
+@model OrderDetailViewInfo
+@{
+    Layout = null;
+}
+<div class="modal-header">
+    <strong class="modal-title">Cập nhật mặt hàng trong đơn hàng</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <form class="container-fluid" id="formEditOrderItem">
+        <input type="hidden" name="orderID" value="@Model.OrderID" />
+        <input type="hidden" name="productID" value="@Model.ProductID" />
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row mb-3 align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold">Mặt hàng</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control-plaintext fw-bold"
+                               value="@Model.ProductName" readonly />
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold">Số lượng</label>
+                    <div class="col-sm-5">
+                        <input type="number" name="quantity" class="form-control text-end"
+                               value="@Model.Quantity" min="1" />
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <label class="col-sm-4 col-form-label fw-semibold">Đơn giá</label>
+                    <div class="col-sm-5">
+                        <input type="number" name="salePrice" class="form-control text-end"
+                               value="@((int)Model.SalePrice)" step="1000" min="0" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <img src="/images/products/@Model.Photo"
+                     alt="@Model.ProductName"
+                     class="img-thumbnail"
+                     style="max-height:180px" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" onclick="updateOrderItem()">
+        Cập nhật
+    </button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>
+
+<script>
+    // TODO: Script này chạy được nhờ execModalScripts() trong site.js
+    // (FIX lỗi "Scripts inserted via innerHTML are not executed")
+
+    /**
+     * Gửi AJAX cập nhật số lượng và giá bán của mặt hàng trong đơn hàng,
+     * sau đó đóng modal và reload danh sách mặt hàng.
+     */
+    function updateOrderItem() {
+        const form = document.getElementById('formEditOrderItem');
+        const formData = new FormData(form);
+
+        fetch('/Order/UpdateOrderItem', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.code !== 1) {
+                alert(result.message);
+                return;
+            }
+            // Đóng modal
+            const modalEl = document.getElementById('dialogModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            // Reload danh sách mặt hàng
+            if (typeof loadOrderDetails === 'function') loadOrderDetails();
+        })
+        .catch(() => alert('Không thể cập nhật mặt hàng'));
+    }
+</script>

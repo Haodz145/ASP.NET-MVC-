@@ -1,0 +1,27 @@
+﻿@using SV22T1020362.Models.Sales
+@model OrderViewInfo
+@{
+    Layout = null;
+}
+<div class="modal-header text-bg-warning">
+    <strong class="modal-title">
+        <i class="bi bi-slash-circle me-2"></i>Xác nhận hủy đơn hàng
+    </strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-warning d-flex align-items-center">
+        <i class="bi bi-info-circle me-2"></i>
+        Bạn có thực sự muốn hủy đơn hàng <strong>#@Model?.OrderID</strong> không?
+    </div>
+</div>
+
+<div class="modal-footer">
+    <form method="post" action="/Order/Cancel/@Model?.OrderID">
+        <button type="submit" class="btn btn-warning">
+            <i class="bi bi-slash-circle me-1"></i>Hủy đơn hàng
+        </button>
+    </form>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>

@@ -1,0 +1,803 @@
+﻿@using SV22T1020362.Models.Sales
+@model OrderViewInfo
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+}
+
+@section PageToolBar {
+    <!-- Nút xử lý đơn hàng theo trạng thái -->
+    @if (Model.Status == OrderStatusEnum.New)
+    {
+        <!-- Trạng thái 1: Có thể Duyệt, Từ chối, Hủy, Xóa -->
+        <div class="btn-group me-1">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-gear me-1"></i>Xử lý đơn hàng
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item open-modal" href="/Order/Accept/@Model.OrderID">
+                        <i class="bi bi-check-circle text-success me-1"></i>Duyệt đơn hàng
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item open-modal" href="/Order/Reject/@Model.OrderID">
+                        <i class="bi bi-x-circle text-danger me-1"></i>Từ chối đơn hàng
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item open-modal" href="/Order/Cancel/@Model.OrderID">
+                        <i class="bi bi-slash-circle text-warning me-1"></i>Hủy đơn hàng
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <a href="/Order/Delete/@Model.OrderID"
+           class="btn btn-danger me-1 open-modal">
+            <i class="bi bi-trash"></i> Xóa
+        </a>
+    }
+    else if (Model.Status == OrderStatusEnum.Accepted)
+    {
+        <!-- Trạng thái 2: Có thể Giao hàng, Hủy -->
+        <div class="btn-group me-1">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-gear me-1"></i>Xử lý đơn hàng
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="javascript:;" onclick="confirmShipping()">
+                        <i class="bi bi-truck text-primary me-1"></i>Chuyển giao hàng
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item open-modal" href="/Order/Cancel/@Model.OrderID">
+                        <i class="bi bi-slash-circle text-warning me-1"></i>Hủy đơn hàng
+                    </a>
+                </li>
+            </ul>
+        </div>
+    }
+    else if (Model.Status == OrderStatusEnum.Shipping)
+    {
+        <!-- Trạng thái 3: Có thể Hoàn tất, Hủy -->
+        <div class="btn-group me-1">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-gear me-1"></i>Xử lý đơn hàng
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item open-modal" href="/Order/Finish/@Model.OrderID">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>Hoàn tất đơn hàng
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item open-modal" href="/Order/Cancel/@Model.OrderID">
+                        <i class="bi bi-slash-circle text-warning me-1"></i>Hủy đơn hàng
+                    </a>
+                </li>
+            </ul>
+        </div>
+    }
+    else if (Model.Status == OrderStatusEnum.Completed ||
+             Model.Status == OrderStatusEnum.Cancelled ||
+             Model.Status == OrderStatusEnum.Rejected)
+    {
+        <!-- Trạng thái cuối: Không có thao tác -->
+        <span class="btn btn-secondary disabled me-1">
+            <i class="bi bi-lock me-1"></i>Không có thao tác
+        </span>
+    }
+
+    <a href="/Order" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+}
+
+<!-- Thông báo lỗi từ TempData (ví dụ: khi Shipping thất bại) -->
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- TRẠNG THÁI ĐƠN HÀNG -->
+@{
+    var (alertClass, alertIcon, statusText, statusTime) = Model.Status switch
+    {
+        OrderStatusEnum.New => ("alert-warning", "bi-clock", "Đơn hàng vừa khởi tạo", Model.OrderTime.ToString("dd/MM/yyyy HH:mm")),
+        OrderStatusEnum.Accepted => ("alert-info", "bi-check-circle", "Đã được duyệt", Model.AcceptTime?.ToString("dd/MM/yyyy HH:mm") ?? ""),
+        OrderStatusEnum.Shipping => ("alert-primary", "bi-truck", "Đang giao hàng", Model.ShippedTime?.ToString("dd/MM/yyyy HH:mm") ?? ""),
+        OrderStatusEnum.Completed => ("alert-success", "bi-check-circle-fill", "Đã hoàn tất", Model.FinishedTime?.ToString("dd/MM/yyyy HH:mm") ?? ""),
+        OrderStatusEnum.Cancelled => ("alert-secondary", "bi-slash-circle", "Đã bị hủy", Model.FinishedTime?.ToString("dd/MM/yyyy HH:mm") ?? ""),
+        OrderStatusEnum.Rejected => ("alert-danger", "bi-x-circle", "Đã bị từ chối", Model.FinishedTime?.ToString("dd/MM/yyyy HH:mm") ?? ""),
+        _ => ("alert-secondary", "bi-question-circle", "Không xác định", "")
+    };
+}
+<div class="alert @alertClass d-flex align-items-center mb-3">
+    <i class="bi @alertIcon fs-4 me-2"></i>
+    <div>
+        <strong>Trạng thái:</strong> @statusText
+        @if (!string.IsNullOrEmpty(statusTime))
+        {
+            <span> — lúc <b>@statusTime</b></span>
+        }
+    </div>
+</div>
+
+<!-- THÔNG TIN ĐƠN HÀNG -->
+<div class="card card-primary card-outline mb-3">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-receipt me-2"></i>Thông tin đơn hàng
+        </h5>
+    </div>
+    <div class="card-body ps-4 pe-4">
+        <div class="row mb-2">
+            <div class="col-md-3 fw-bold">Mã đơn hàng</div>
+            <div class="col-md-3">#@Model.OrderID</div>
+            <div class="col-md-3 fw-bold">Ngày lập</div>
+            <div class="col-md-3">@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 fw-bold">Nhân viên phụ trách</div>
+            <div class="col-md-3">@(string.IsNullOrEmpty(Model.EmployeeName) ? "Chưa có" : Model.EmployeeName)</div>
+            <div class="col-md-3 fw-bold">Ngày nhận đơn</div>
+            <div class="col-md-3">@(Model.AcceptTime?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa duyệt")</div>
+        </div>
+    </div>
+</div>
+
+<!-- THÔNG TIN KHÁCH HÀNG -->
+<div class="card card-info card-outline mb-3">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person me-2"></i>Thông tin khách hàng
+                </h5>
+            </div>
+            @if ((Model.Status == OrderStatusEnum.New || Model.Status == OrderStatusEnum.Accepted) &&
+                        Model.CustomerID.HasValue == false || Model.CustomerID == 0)
+            {
+                <!-- Chưa có khách hàng: hiển thị nút Thêm -->
+                <div class="col-auto">
+                    <button type="button" class="btn btn-sm btn-info" onclick="openDetailCustomerModal()">
+                        <i class="bi bi-person-plus me-1"></i>Thêm khách hàng
+                    </button>
+                </div>
+            }
+            else if (Model.Status == OrderStatusEnum.New || Model.Status == OrderStatusEnum.Accepted)
+            {
+                <!-- Đã có khách hàng nhưng vẫn cho phép chỉnh sửa -->
+                <div class="col-auto">
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="openDetailCustomerModal()">
+                        <i class="bi bi-pencil me-1"></i>Sửa khách hàng
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-body ps-4 pe-4" id="customerInfoBody">
+        @if (Model.CustomerID.HasValue && Model.CustomerID > 0)
+        {
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Khách hàng</div>
+                <div class="col-md-3">@Model.CustomerName</div>
+                <div class="col-md-3 fw-bold">Tên giao dịch</div>
+                <div class="col-md-3">@Model.CustomerContactName</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Email</div>
+                <div class="col-md-9">@Model.CustomerEmail</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Điện thoại</div>
+                <div class="col-md-9">@Model.CustomerPhone</div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 fw-bold">Địa chỉ</div>
+                <div class="col-md-9">@Model.CustomerAddress</div>
+            </div>
+        }
+        else
+        {
+            <div class="text-muted fst-italic">Chưa có thông tin khách hàng.</div>
+        }
+    </div>
+</div>
+
+<!-- THÔNG TIN GIAO HÀNG -->
+<div class="card card-success card-outline mb-3">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-truck me-2"></i>Thông tin giao hàng
+                </h5>
+            </div>
+            @if (Model.Status == OrderStatusEnum.Accepted)
+            {
+                <!-- Nút Thêm/Sửa người giao hàng -->
+                <div class="col-auto">
+                    <button type="button" class="btn btn-sm btn-success me-1" onclick="openShipperModal()">
+                        <i class="bi bi-bicycle me-1"></i>
+                        @(Model.ShipperID.HasValue ? "Sửa người giao hàng" : "Thêm người giao hàng")
+                    </button>
+                    <!-- Nút Thêm/Sửa địa chỉ giao hàng -->
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="openDeliveryAddressModal()">
+                        <i class="bi bi-geo-alt me-1"></i>
+                        @(string.IsNullOrEmpty(Model.DeliveryAddress) ? "Thêm địa chỉ" : "Sửa địa chỉ")
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-body ps-4 pe-4" id="shippingInfoBody">
+        <div class="row mb-2">
+            <div class="col-md-3 fw-bold">Người giao hàng</div>
+            <div class="col-md-3" id="displayShipperName">@(string.IsNullOrEmpty(Model.ShipperName) ? "Chưa có" : Model.ShipperName)</div>
+            <div class="col-md-3 fw-bold">Điện thoại</div>
+            <div class="col-md-3" id="displayShipperPhone">@Model.ShipperPhone</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-3 fw-bold">Địa chỉ giao hàng</div>
+            <div class="col-md-9" id="displayDeliveryAddress">@(string.IsNullOrEmpty(Model.DeliveryAddress) ? "Chưa có" : Model.DeliveryAddress)</div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 fw-bold">Tỉnh / Thành</div>
+            <div class="col-md-9" id="displayDeliveryProvince">@(string.IsNullOrEmpty(Model.DeliveryProvince) ? "Chưa có" : Model.DeliveryProvince)</div>
+        </div>
+    </div>
+</div>
+
+<!-- DANH SÁCH MẶT HÀNG — load AJAX -->
+<div id="orderDetailsSection">
+    <div class="text-center py-3"><span>Đang tải danh sách mặt hàng...</span></div>
+</div>
+
+<!-- ===== MODAL CHỌN / TẠO KHÁCH HÀNG (dùng trong Detail) ===== -->
+<div class="modal fade" id="detailCustomerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header text-bg-info">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Tìm kiếm / Thêm khách hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 position-relative">
+                    <label class="form-label fw-semibold">Tên khách hàng <span class="text-danger">*</span></label>
+                    <input type="text" id="dcModalCustomerName" class="form-control"
+                           placeholder="Nhập hoặc chọn..." autocomplete="off"
+                           oninput="onDcCustomerNameInput(this.value)" />
+                    <div id="dcCustomerSuggestions"
+                         class="list-group position-absolute w-100"
+                         style="z-index:9999; max-height:200px; overflow-y:auto; display:none;"></div>
+                    <div class="invalid-feedback" id="errDcCustomerName">Vui lòng nhập tên khách hàng.</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tên giao dịch</label>
+                        <input type="text" id="dcContactName" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Điện thoại</label>
+                        <input type="tel" id="dcPhone" class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                        <input type="email" id="dcEmail" class="form-control" />
+                        <div class="invalid-feedback" id="errDcEmail">Vui lòng nhập email hợp lệ.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Tỉnh/Thành <span class="text-danger">*</span></label>
+                        <select id="dcProvince" class="form-select">
+                            @{
+                                var provincesDetail = await SV22T1020362.BusinessLayers.DictionaryDataService.ListProvincesAsync();
+                            }
+                            <option value="">-- Tỉnh/Thành phố --</option>
+                            @foreach (var p in provincesDetail)
+                            {
+                                <option value="@p.ProvinceName">@p.ProvinceName</option>
+                            }
+                        </select>
+                        <div class="invalid-feedback" id="errDcProvince">Vui lòng chọn Tỉnh/Thành.</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Địa chỉ</label>
+                    <textarea id="dcAddress" class="form-control" rows="2"></textarea>
+                </div>
+                <div id="dcModalError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="dcSelectedCustomerID" value="0" />
+                <button type="button" class="btn btn-primary" onclick="confirmDetailCustomer()">
+                    <i class="bi bi-check-circle me-1"></i>Chọn
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL CHỌN / TẠO NGƯỜI GIAO HÀNG ===== -->
+<div class="modal fade" id="shipperModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-bg-success">
+                <h5 class="modal-title">
+                    <i class="bi bi-bicycle me-2"></i>Chọn người giao hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tên người giao hàng: dropdown + nhập mới -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Người giao hàng <span class="text-danger">*</span></label>
+                    <select id="shipperDropdown" class="form-select" onchange="onShipperDropdownChange(this)">
+                        <option value="0">-- Chọn người giao hàng --</option>
+                        <!-- Được populate bởi JS -->
+                    </select>
+                </div>
+                <!-- Hoặc nhập mới -->
+                <div class="mb-3">
+                    <label class="form-label">Hoặc nhập tên người giao hàng mới</label>
+                    <input type="text" id="newShipperName" class="form-control"
+                           placeholder="Nhập tên nếu muốn tạo mới..."
+                           oninput="onNewShipperNameInput()" />
+                    <div class="invalid-feedback" id="errNewShipperName">Tên người giao hàng không được để trống.</div>
+                </div>
+                <div class="mb-3" id="newShipperPhoneGroup" style="display:none;">
+                    <label class="form-label">Điện thoại</label>
+                    <input type="tel" id="newShipperPhone" class="form-control" />
+                </div>
+                <div id="shipperModalError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="selectedShipperID" value="0" />
+                <button type="button" class="btn btn-primary" onclick="confirmShipperSelection()">
+                    <i class="bi bi-check-circle me-1"></i>Chọn
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL NHẬP ĐỊA CHỈ GIAO HÀNG ===== -->
+<div class="modal fade" id="deliveryAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-bg-success">
+                <h5 class="modal-title">
+                    <i class="bi bi-geo-alt me-2"></i>Địa chỉ giao hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tỉnh/Thành <span class="text-danger">*</span></label>
+                    <select id="daProvince" class="form-select">
+                        <option value="">-- Tỉnh/Thành phố --</option>
+                        @{
+                            var provincesDelivery = await SV22T1020362.BusinessLayers.DictionaryDataService.ListProvincesAsync();
+                        }
+                        @foreach (var p in provincesDelivery)
+                        {
+                            <option value="@p.ProvinceName" selected="@(Model.DeliveryProvince == p.ProvinceName ? "selected" : null)">@p.ProvinceName</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback" id="errDaProvince">Vui lòng chọn Tỉnh/Thành.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Địa chỉ <span class="text-danger">*</span></label>
+                    <textarea id="daAddress" class="form-control" rows="3">@Model.DeliveryAddress</textarea>
+                    <div class="invalid-feedback" id="errDaAddress">Vui lòng nhập địa chỉ giao hàng.</div>
+                </div>
+                <div id="daModalError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="confirmDeliveryAddress()">
+                    <i class="bi bi-check-circle me-1"></i>Chọn
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card-body .row {
+            border-bottom: 1px dotted #ddd;
+            padding-bottom: 6px;
+            padding-top: 6px;
+        }
+
+            .card-body .row:last-child {
+                border-bottom: none;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const ORDER_ID = @Model.OrderID;
+        let detailAllCustomers = [];
+        let allShippers = [];
+
+        // ===== Load danh sách mặt hàng =====
+        function loadOrderDetails() {
+            fetch(`/Order/LoadOrderDetails?id=${ORDER_ID}`)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('orderDetailsSection').innerHTML = html;
+                    // Bind sự kiện open-modal cho các nút mới render
+                    document.querySelectorAll('#orderDetailsSection .open-modal').forEach(el => {
+                        el.addEventListener('click', function(e) { openModal(e, this); });
+                    });
+                })
+                .catch(() => {
+                    document.getElementById('orderDetailsSection').innerHTML =
+                        '<div class="text-danger p-3">Không tải được danh sách mặt hàng</div>';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrderDetails();
+            loadAllShippers();
+            // Load danh sách khách hàng sẵn cho modal
+            fetch('/Order/SearchCustomers?q=')
+                .then(r => r.json())
+                .then(data => { detailAllCustomers = data; })
+                .catch(err => console.error(err));
+        });
+
+        // ===== Load tất cả shipper =====
+        function loadAllShippers() {
+            fetch('/Order/GetAllShippers')
+                .then(r => r.json())
+                .then(data => { allShippers = data; })
+                .catch(err => console.error('LoadAllShippers error:', err));
+        }
+
+        // ===== Modal khách hàng (trong Detail) =====
+        function openDetailCustomerModal() {
+            document.getElementById('dcModalCustomerName').value = '';
+            document.getElementById('dcContactName').value = '';
+            document.getElementById('dcPhone').value = '';
+            document.getElementById('dcEmail').value = '';
+            document.getElementById('dcProvince').value = '';
+            document.getElementById('dcAddress').value = '';
+            document.getElementById('dcSelectedCustomerID').value = '0';
+            document.getElementById('dcCustomerSuggestions').style.display = 'none';
+            document.getElementById('dcModalError').style.display = 'none';
+            clearDcValidation();
+
+            const modal = new bootstrap.Modal(document.getElementById('detailCustomerModal'), {
+                backdrop: 'static', keyboard: false
+            });
+            modal.show();
+        }
+
+        //Hiển thị danh sách 20 customer gợi ý khi bắt đầu nhập trường Tên khách hàng
+        function onDcCustomerNameInput(value) {
+            document.getElementById('dcSelectedCustomerID').value = '0';
+            const sugDiv = document.getElementById('dcCustomerSuggestions');
+            if (!value) { sugDiv.style.display = 'none'; return; }
+
+            const filtered = detailAllCustomers.filter(c =>
+                c.customerName.toLowerCase().includes(value.toLowerCase()) ||
+                (c.phone && c.phone.includes(value)) ||
+                (c.email && c.email.toLowerCase().includes(value.toLowerCase()))
+            ).slice(0, 20);
+
+            if (!filtered.length) { sugDiv.style.display = 'none'; return; }
+
+            sugDiv.innerHTML = '';
+            filtered.forEach(c => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action py-1';
+                item.innerHTML = `<strong>${c.customerName}</strong>${c.phone ? ' — ' + c.phone : ''}${c.email ? ' | ' + c.email : ''}`;
+                item.onclick = () => selectDcCustomer(c);
+                sugDiv.appendChild(item);
+            });
+            sugDiv.style.display = '';
+        }
+
+        //Khi chọn 1 trong 20 gợi ý sẽ nhập thông tin của khách hàng đó vào phần Thông tin khách hàng
+        //Trong chi tiết đơn hàng
+        function selectDcCustomer(customer) {
+            document.getElementById('dcSelectedCustomerID').value = customer.customerID;
+            document.getElementById('dcModalCustomerName').value = customer.customerName;
+            document.getElementById('dcContactName').value = customer.contactName || '';
+            document.getElementById('dcPhone').value = customer.phone || '';
+            document.getElementById('dcEmail').value = customer.email || '';
+            document.getElementById('dcProvince').value = customer.province || '';
+            document.getElementById('dcAddress').value = customer.address || '';
+            document.getElementById('dcCustomerSuggestions').style.display = 'none';
+            clearDcValidation();
+        }
+
+        document.addEventListener('click', function(e) {
+            const sug = document.getElementById('dcCustomerSuggestions');
+            if (sug && !sug.contains(e.target) && e.target.id !== 'dcModalCustomerName')
+                sug.style.display = 'none';
+        });
+
+        //Hàm xác nhận thông tin khách hàng được chọn
+        async function confirmDetailCustomer() {
+            clearDcValidation();
+            const selectedID   = parseInt(document.getElementById('dcSelectedCustomerID').value);
+            const customerName = document.getElementById('dcModalCustomerName').value.trim();
+            const contactName  = document.getElementById('dcContactName').value.trim();
+            const phone        = document.getElementById('dcPhone').value.trim();
+            const email        = document.getElementById('dcEmail').value.trim();
+            const province     = document.getElementById('dcProvince').value;
+            const address      = document.getElementById('dcAddress').value.trim();
+
+            if (selectedID > 0) {
+                await updateOrderCustomer(selectedID, customerName);
+                return;
+            }
+
+            let valid = true;
+            if (!customerName) { document.getElementById('dcModalCustomerName').classList.add('is-invalid'); valid = false; }
+            if (!email)        { document.getElementById('dcEmail').classList.add('is-invalid'); document.getElementById('errDcEmail').textContent = 'Vui lòng nhập email.'; valid = false; }
+            if (!province)     { document.getElementById('dcProvince').classList.add('is-invalid'); valid = false; }
+            if (!valid) return;
+
+            const formData = new FormData();
+            formData.append('customerName', customerName);
+            formData.append('contactName', contactName);
+            formData.append('phone', phone);
+            formData.append('email', email);
+            formData.append('province', province);
+            formData.append('address', address);
+
+            try {
+                const res = await fetch('/Order/CreateCustomerFromModal', { method: 'POST', body: formData });
+                const result = await res.json();
+                if (result.code !== 1) {
+                    document.getElementById('dcModalError').textContent = result.message;
+                    document.getElementById('dcModalError').style.display = '';
+                    return;
+                }
+                detailAllCustomers.push(result.data);
+                await updateOrderCustomer(result.data.customerID, result.data.customerName);
+            } catch {
+                document.getElementById('dcModalError').textContent = 'Có lỗi xảy ra.';
+                document.getElementById('dcModalError').style.display = '';
+            }
+        }
+
+        //Cập nhật CustomerID cho đơn hàng khi đã chọn xong
+        async function updateOrderCustomer(customerID, customerName) {
+            const formData = new FormData();
+            formData.append('orderID', ORDER_ID);
+            formData.append('customerID', customerID);
+
+            const res = await fetch('/Order/UpdateOrderCustomer', { method: 'POST', body: formData });
+            const result = await res.json();
+            if (result.code !== 1) { alert(result.message); return; }
+
+            const modalEl = document.getElementById('detailCustomerModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            window.location.reload();
+        }
+
+        function clearDcValidation() {
+            ['dcModalCustomerName','dcEmail','dcProvince'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('is-invalid');
+            });
+            const errEl = document.getElementById('dcModalError');
+            if (errEl) errEl.style.display = 'none';
+        }
+
+        // ===== Modal shipper =====
+        function openShipperModal() {
+            document.getElementById('newShipperName').value = '';
+            document.getElementById('newShipperPhone').value = '';
+            document.getElementById('newShipperPhoneGroup').style.display = 'none';
+            document.getElementById('selectedShipperID').value = '0';
+            document.getElementById('shipperModalError').style.display = 'none';
+            document.getElementById('newShipperName').classList.remove('is-invalid');
+
+            const sel = document.getElementById('shipperDropdown');
+            while (sel.options.length > 1) sel.remove(1);
+
+            const modal = new bootstrap.Modal(document.getElementById('shipperModal'), {
+                backdrop: 'static', keyboard: false
+            });
+            modal.show();
+
+            fetch('/Order/GetAllShippers')
+                .then(r => r.json())
+                .then(data => {
+                    allShippers = data;
+                    data.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s.shipperID;
+                        opt.text = `${s.shipperName}${s.phone ? ' - ' + s.phone : ''}`;
+                        sel.appendChild(opt);
+                    });
+                    // Pre-select shipper hiện tại
+                    const currentName = document.getElementById('displayShipperName').textContent.trim();
+                    if (currentName && currentName !== 'Chưa có') {
+                        const found = data.find(s => s.shipperName === currentName);
+                        if (found) {
+                            sel.value = found.shipperID;
+                            document.getElementById('selectedShipperID').value = found.shipperID;
+                        }
+                    }
+                });
+        }
+
+        //dropdown shipper
+        function onShipperDropdownChange(sel) {
+            const id = parseInt(sel.value);
+            document.getElementById('selectedShipperID').value = id;
+            if (id > 0) {
+                document.getElementById('newShipperName').value = '';
+                document.getElementById('newShipperPhoneGroup').style.display = 'none';
+            }
+        }
+
+        //nhập thông tin shipper mới
+        function onNewShipperNameInput() {
+            document.getElementById('shipperDropdown').value = '0';
+            document.getElementById('selectedShipperID').value = '0';
+            const val = document.getElementById('newShipperName').value.trim();
+            document.getElementById('newShipperPhoneGroup').style.display = val ? '' : 'none';
+        }
+
+        //confirm thông tin shipper
+        async function confirmShipperSelection() {
+            document.getElementById('shipperModalError').style.display = 'none';
+            document.getElementById('newShipperName').classList.remove('is-invalid');
+
+            const selectedID = parseInt(document.getElementById('selectedShipperID').value);
+            const newName    = document.getElementById('newShipperName').value.trim();
+            const newPhone   = document.getElementById('newShipperPhone').value.trim();
+
+            let shipperID = selectedID, shipperName = '', shipperPhone = '';
+
+            if (selectedID > 0) {
+                const s = allShippers.find(x => x.shipperID === selectedID);
+                shipperName  = s ? s.shipperName : '';
+                shipperPhone = s ? (s.phone || '') : '';
+            } else if (newName) {
+                const formData = new FormData();
+                formData.append('shipperName', newName);
+                formData.append('phone', newPhone);
+                try {
+                    const res = await fetch('/Order/CreateShipperFromModal', { method: 'POST', body: formData });
+                    const result = await res.json();
+                    if (result.code !== 1) {
+                        document.getElementById('shipperModalError').textContent = result.message;
+                        document.getElementById('shipperModalError').style.display = '';
+                        return;
+                    }
+                    shipperID = result.data.shipperID;
+                    shipperName = result.data.shipperName;
+                    shipperPhone = result.data.phone || '';
+                    allShippers.push(result.data);
+                } catch {
+                    document.getElementById('shipperModalError').textContent = 'Có lỗi xảy ra.';
+                    document.getElementById('shipperModalError').style.display = '';
+                    return;
+                }
+            } else {
+                document.getElementById('newShipperName').classList.add('is-invalid');
+                return;
+            }
+
+            const currentProvince = document.getElementById('displayDeliveryProvince').textContent.trim();
+            const currentAddress  = document.getElementById('displayDeliveryAddress').textContent.trim();
+            await saveShipperDelivery(
+                shipperID,
+                currentProvince === 'Chưa có' ? '' : currentProvince,
+                currentAddress  === 'Chưa có' ? '' : currentAddress,
+                shipperName, shipperPhone
+            );
+        }
+
+        // ===== Modal địa chỉ giao hàng =====
+        function openDeliveryAddressModal() {
+            document.getElementById('daModalError').style.display = 'none';
+            ['daProvince','daAddress'].forEach(id => document.getElementById(id).classList.remove('is-invalid'));
+            const modal = new bootstrap.Modal(document.getElementById('deliveryAddressModal'), {
+                backdrop: 'static', keyboard: false
+            });
+            modal.show();
+        }
+
+        async function confirmDeliveryAddress() {
+            document.getElementById('daModalError').style.display = 'none';
+            const province = document.getElementById('daProvince').value;
+            const address  = document.getElementById('daAddress').value.trim();
+
+            let valid = true;
+            if (!province) { document.getElementById('daProvince').classList.add('is-invalid'); valid = false; }
+            if (!address)  { document.getElementById('daAddress').classList.add('is-invalid'); valid = false; }
+            if (!valid) return;
+
+            const currentShipperName  = document.getElementById('displayShipperName').textContent.trim();
+            const currentShipperPhone = document.getElementById('displayShipperPhone').textContent.trim();
+
+            let shipperID = 0;
+            if (currentShipperName && currentShipperName !== 'Chưa có' && allShippers.length) {
+                const found = allShippers.find(s => s.shipperName === currentShipperName);
+                if (found) shipperID = found.shipperID;
+            }
+
+            await saveShipperDelivery(
+                shipperID,
+                province,
+                address,
+                currentShipperName === 'Chưa có' ? '' : currentShipperName,
+                currentShipperPhone
+            );
+        }
+
+        //Lưu thông tin giao hàng gồm: người giao, tỉnh thành, địa chỉ
+        async function saveShipperDelivery(shipperID, province, address, shipperName, shipperPhone) {
+            const formData = new FormData();
+            formData.append('orderID', ORDER_ID);
+            formData.append('shipperID', shipperID);
+            formData.append('deliveryProvince', province);
+            formData.append('deliveryAddress', address);
+
+            try {
+                const res = await fetch('/Order/UpdateOrderShipperDelivery', { method: 'POST', body: formData });
+                const result = await res.json();
+                if (result.code !== 1) { alert(result.message); return; }
+
+                ['shipperModal','deliveryAddressModal'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { const m = bootstrap.Modal.getInstance(el); if (m) m.hide(); }
+                });
+
+                document.getElementById('displayShipperName').textContent    = shipperName  || 'Chưa có';
+                document.getElementById('displayShipperPhone').textContent   = shipperPhone || '';
+                document.getElementById('displayDeliveryProvince').textContent = province   || 'Chưa có';
+                document.getElementById('displayDeliveryAddress').textContent  = address    || 'Chưa có';
+
+                window.location.reload();
+            } catch {
+                alert('Có lỗi xảy ra.');
+            }
+        }
+
+        // ===== Chuyển giao hàng =====
+        async function confirmShipping() {
+            const shipperName = document.getElementById('displayShipperName').textContent.trim();
+            const province    = document.getElementById('displayDeliveryProvince').textContent.trim();
+            const address     = document.getElementById('displayDeliveryAddress').textContent.trim();
+            const customerBody = document.getElementById('customerInfoBody');
+            const hasCustomer  = customerBody && !customerBody.querySelector('.fst-italic');
+
+            if (!hasCustomer) { alert('Phải chọn khách hàng trước khi chuyển giao hàng!'); return; }
+            if (!shipperName || shipperName === 'Chưa có') { alert('Phải chọn người giao hàng trước khi chuyển giao hàng!'); return; }
+            if (!province || province === 'Chưa có') { alert('Phải nhập Tỉnh/Thành giao hàng trước khi chuyển giao hàng!'); return; }
+            if (!address || address === 'Chưa có') { alert('Phải nhập địa chỉ giao hàng trước khi chuyển giao hàng!'); return; }
+
+            openModal(null, { getAttribute: () => `/Order/Shipping/@Model.OrderID` });
+        }
+
+    </script>
+}

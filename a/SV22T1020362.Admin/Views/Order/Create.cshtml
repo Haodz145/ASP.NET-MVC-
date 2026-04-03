@@ -1,0 +1,486 @@
+﻿@model ProductSearchInput
+@{
+    ViewBag.Title = "Lập đơn hàng";
+}
+
+<div class="row">
+    <!-- Tìm kiếm & chọn mặt hàng -->
+    <div class="col-4">
+        <div class="card card-outline card-primary h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-search"></i>
+                    Lựa chọn hàng cần bán
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <!-- Form tìm kiếm mặt hàng AJAX -->
+                <form id="formSearch"
+                      method="get"
+                      action="~/Order/SearchProduct"
+                      data-target="searchResult"
+                      onsubmit="paginationSearch(event, this, 1)">
+
+                    <input type="hidden" asp-for="PageSize" />
+                    <input type="hidden" asp-for="CategoryID" />
+                    <input type="hidden" asp-for="SupplierID" />
+                    <input type="hidden" asp-for="MinPrice" />
+                    <input type="hidden" asp-for="MaxPrice" />
+
+                    <div class="input-group">
+                        <input class="form-control"
+                               asp-for="SearchValue"
+                               placeholder="Nhập tên mặt hàng cần tìm" autofocus />
+                        <button class="btn btn-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="searchResult" class="mt-2"><!-- SearchProduct.cshtml --></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Giỏ hàng và thông tin khách hàng -->
+    <div class="col-8">
+        <!-- Giỏ hàng -->
+        <div class="row">
+            <div class="col-12" id="cart">
+                <!-- ShowCart.cshtml -->
+            </div>
+        </div>
+
+        <!-- Thông tin khách hàng và nơi giao hàng -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card card-outline card-info">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person"></i>
+                            Thông tin khách hàng &amp; nơi giao hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="formCreateOrder" onsubmit="createOrder(event, this)">
+                            <!-- Hidden field lưu CustomerID thực sự được chọn -->
+                            <input type="hidden" id="selectedCustomerID" name="customerID" value="0" />
+
+                            <!-- Trường Khách hàng: Dropdown + nút Tìm kiếm thêm -->
+                            <div class="row mb-3">
+                                <label class="col-md-2 col-form-label">Khách hàng</label>
+                                <div class="col-md-10">
+                                    <input type="hidden" id="selectedCustomerID" name="customerID" value="0" />
+                                    <!-- Ô nhập tìm kiếm khách hàng có gợi ý dropdown -->
+                                    <div class="position-relative">
+                                        <div class="input-group">
+                                            <input type="text"
+                                                   id="customerSearchInput"
+                                                   class="form-control"
+                                                   placeholder="Nhập tên, SĐT hoặc email khách hàng..."
+                                                   autocomplete="off"
+                                                   oninput="onCustomerSearchInput(this.value)" />
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                    onclick="openCustomerSearchModal()">
+                                                <i class="bi bi-person-plus me-1"></i>Thêm mới
+                                            </button>
+                                        </div>
+                                        <!-- Dropdown gợi ý -->
+                                        <div id="customerSuggestionsMain"
+                                             class="list-group position-absolute w-100"
+                                             style="z-index:9999; max-height:220px; overflow-y:auto; display:none;">
+                                        </div>
+                                    </div>
+                                    <!-- Hiển thị khách hàng đã chọn -->
+                                    <div id="selectedCustomerInfo" class="mt-1 text-success small" style="display:none;">
+                                        <i class="bi bi-person-check me-1"></i>
+                                        <span id="selectedCustomerName"></span>
+                                        <a href="javascript:;" class="ms-2 text-danger small" onclick="clearSelectedCustomer()">
+                                            <i class="bi bi-x"></i> Bỏ chọn
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tỉnh/thành giao hàng (DeliveryProvince) -->
+                            <div class="row mb-3">
+                                <label class="col-md-2 col-form-label">Tỉnh/thành</label>
+                                <div class="col-md-10">
+                                    <select class="form-select" name="province"
+                                            asp-items="await SelectListHelper.Provinces()">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Địa chỉ giao hàng (DeliveryAddress) -->
+                            <div class="row mb-3">
+                                <label class="col-md-2 col-form-label">Địa chỉ</label>
+                                <div class="col-md-10">
+                                    <textarea class="form-control" name="address" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i>
+                                    Lập đơn hàng
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL TÌM KIẾM / TẠO KHÁCH HÀNG ===================== -->
+<div class="modal fade" id="customerSearchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header text-bg-info">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Tìm kiếm / Thêm khách hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tên khách hàng: nhập hoặc chọn từ datalist -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Tên khách hàng
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           id="modalCustomerName"
+                           class="form-control"
+                           placeholder="Nhập hoặc chọn tên khách hàng..."
+                           autocomplete="off"
+                           oninput="onModalCustomerNameInput(this.value)" />
+                    <!-- Dropdown gợi ý -->
+                    <div id="customerSuggestions"
+                         class="list-group position-absolute w-100"
+                         style="z-index:9999; max-height:200px; overflow-y:auto; display:none;">
+                    </div>
+                    <div class="invalid-feedback" id="errModalCustomerName">Vui lòng nhập tên khách hàng.</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tên giao dịch</label>
+                        <input type="text" id="modalContactName" class="form-control" placeholder="" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Điện thoại</label>
+                        <input type="tel" id="modalPhone" class="form-control" placeholder="" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Email <span class="text-danger">*</span>
+                        </label>
+                        <input type="email" id="modalEmail" class="form-control" placeholder="" />
+                        <div class="invalid-feedback" id="errModalEmail">Vui lòng nhập email hợp lệ.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Tỉnh/Thành <span class="text-danger">*</span>
+                        </label>
+                        <select id="modalProvince" class="form-select">
+                            @{
+                                var provinces = await SV22T1020362.BusinessLayers.DictionaryDataService.ListProvincesAsync();
+                            }
+                            <option value="">-- Tỉnh/Thành phố --</option>
+                            @foreach (var p in provinces)
+                            {
+                                <option value="@p.ProvinceName">@p.ProvinceName</option>
+                            }
+                        </select>
+                        <div class="invalid-feedback" id="errModalProvince">Vui lòng chọn Tỉnh/Thành.</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Địa chỉ</label>
+                    <textarea id="modalAddress" class="form-control" rows="2"></textarea>
+                </div>
+
+                <!-- Thông báo lỗi chung -->
+                <div id="modalCustomerError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <!-- Hidden: lưu CustomerID nếu đã chọn từ danh sách -->
+                <input type="hidden" id="modalSelectedCustomerID" value="0" />
+                <button type="button" class="btn btn-primary" onclick="confirmSelectCustomer()">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Chọn
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let allCustomers = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            paginationSearch(null, document.getElementById("formSearch"), @Model.Page);
+            showCart();
+            loadTopCustomers();
+        });
+
+        // ===== Giỏ hàng =====
+        function showCart() {
+            fetch('/Order/ShowCart')
+                .then(r => r.text())
+                .then(html => { document.getElementById('cart').innerHTML = html; })
+                .catch(err => console.error('ShowCart error:', err));
+        }
+
+        function addCartItem(event, form) {
+            event.preventDefault();
+            fetch('/Order/AddCartItem', { method: 'POST', body: new FormData(form) })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.code === 1) showCart();
+                    else alert(result.message);
+                });
+        }
+
+        function deleteCartItem(productId) {
+            fetch(`/Order/DeleteCartItem?productId=${productId}`, { method: 'POST' })
+                .then(() => showCart());
+        }
+
+        function clearCart() {
+            fetch('/Order/ClearCart', { method: 'POST' })
+                .then(() => showCart());
+        }
+
+        function updateCartItem(form) {
+            fetch('/Order/UpdateCartItem', { method: 'POST', body: new FormData(form) })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.code !== 1) { alert(result.message); return; }
+                    const modalEl = document.getElementById('dialogModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    showCart();
+                });
+        }
+
+        // ===== Tạo đơn hàng =====
+        function createOrder(event, form) {
+            event.preventDefault();
+            fetch('/Order/CreateOrder', { method: 'POST', body: new FormData(form) })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.code === 0) { alert(result.message); return; }
+                    window.location.href = `/Order/Detail/${result.code}`;
+                })
+                .catch(err => { alert('Không thể tạo đơn hàng'); });
+        }
+
+        // ===== Load khách hàng cho dropdown =====
+        function loadTopCustomers() {
+            fetch('/Order/SearchCustomers?q=')
+                .then(r => r.json())
+                .then(data => {
+                    allCustomers = data;
+                })
+                .catch(err => console.error('LoadCustomers error:', err));
+        }
+
+        // ===== Modal tìm kiếm / tạo khách hàng =====
+        function openCustomerSearchModal() {
+            // Reset form
+            document.getElementById('modalCustomerName').value = '';
+            document.getElementById('modalContactName').value = '';
+            document.getElementById('modalPhone').value = '';
+            document.getElementById('modalEmail').value = '';
+            document.getElementById('modalProvince').value = '';
+            document.getElementById('modalAddress').value = '';
+            document.getElementById('modalSelectedCustomerID').value = '0';
+            document.getElementById('customerSuggestions').style.display = 'none';
+            document.getElementById('modalCustomerError').style.display = 'none';
+            clearModalValidation();
+
+            const modal = new bootstrap.Modal(document.getElementById('customerSearchModal'), {
+                backdrop: 'static', keyboard: false
+            });
+            modal.show();
+        }
+
+        // Khi nhập tên trong modal → hiện dropdown gợi ý
+        function onModalCustomerNameInput(value) {
+            document.getElementById('modalSelectedCustomerID').value = '0';
+            const suggestionsDiv = document.getElementById('customerSuggestions');
+
+            if (!value || value.length < 1) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const filtered = allCustomers.filter(c =>
+                c.customerName.toLowerCase().includes(value.toLowerCase()) ||
+                (c.phone && c.phone.includes(value)) ||
+                (c.email && c.email.toLowerCase().includes(value.toLowerCase()))
+            ).slice(0, 20);
+
+            if (!filtered.length) { suggestionsDiv.style.display = 'none'; return; }
+
+            suggestionsDiv.innerHTML = '';
+            filtered.forEach(c => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action py-1';
+                item.innerHTML = `<strong>${c.customerName}</strong>${c.phone ? ' — ' + c.phone : ''}${c.email ? ' | ' + c.email : ''}`;
+                item.onclick = () => selectCustomerInModal(c);
+                suggestionsDiv.appendChild(item);
+            });
+            suggestionsDiv.style.display = '';
+        }
+
+        // Chọn khách hàng từ gợi ý → điền form
+        function selectCustomerInModal(customer) {
+            document.getElementById('modalSelectedCustomerID').value = customer.customerID;
+            document.getElementById('modalCustomerName').value = customer.customerName;
+            document.getElementById('modalContactName').value = customer.contactName || '';
+            document.getElementById('modalPhone').value = customer.phone || '';
+            document.getElementById('modalEmail').value = customer.email || '';
+            document.getElementById('modalProvince').value = customer.province || '';
+            document.getElementById('modalAddress').value = customer.address || '';
+            document.getElementById('customerSuggestions').style.display = 'none';
+            clearModalValidation();
+        }
+
+        document.addEventListener('click', function(e) {
+            const sug = document.getElementById('customerSuggestions');
+            if (sug && !sug.contains(e.target) && e.target.id !== 'modalCustomerName')
+                sug.style.display = 'none';
+        });
+
+        // Xác nhận chọn / tạo khách hàng
+        async function confirmSelectCustomer() {
+            clearModalValidation();
+            const selectedID   = parseInt(document.getElementById('modalSelectedCustomerID').value);
+            const customerName = document.getElementById('modalCustomerName').value.trim();
+            const contactName  = document.getElementById('modalContactName').value.trim();
+            const phone        = document.getElementById('modalPhone').value.trim();
+            const email        = document.getElementById('modalEmail').value.trim();
+            const province     = document.getElementById('modalProvince').value;
+            const address      = document.getElementById('modalAddress').value.trim();
+
+            // Đã chọn từ danh sách → dùng luôn
+            if (selectedID > 0) {
+                applySelectedCustomer(selectedID, customerName);
+                return;
+            }
+
+            // Nhập mới → validate
+            let valid = true;
+            if (!customerName) { document.getElementById('modalCustomerName').classList.add('is-invalid'); valid = false; }
+            if (!email)        { document.getElementById('modalEmail').classList.add('is-invalid'); document.getElementById('errModalEmail').textContent = 'Vui lòng nhập email.'; valid = false; }
+            if (!province)     { document.getElementById('modalProvince').classList.add('is-invalid'); valid = false; }
+            if (!valid) return;
+
+            const formData = new FormData();
+            formData.append('customerName', customerName);
+            formData.append('contactName', contactName);
+            formData.append('phone', phone);
+            formData.append('email', email);
+            formData.append('province', province);
+            formData.append('address', address);
+
+            try {
+                const res = await fetch('/Order/CreateCustomerFromModal', { method: 'POST', body: formData });
+                const result = await res.json();
+                if (result.code !== 1) {
+                    document.getElementById('modalCustomerError').textContent = result.message;
+                    document.getElementById('modalCustomerError').style.display = '';
+                    return;
+                }
+                allCustomers.push(result.data);
+                applySelectedCustomer(result.data.customerID, result.data.customerName);
+            } catch {
+                document.getElementById('modalCustomerError').textContent = 'Có lỗi xảy ra.';
+                document.getElementById('modalCustomerError').style.display = '';
+            }
+        }
+
+        function applySelectedCustomer(customerID, customerName) {
+            document.getElementById('selectedCustomerID').value = customerID;
+            document.getElementById('selectedCustomerName').textContent = customerName;
+            document.getElementById('selectedCustomerInfo').style.display = '';
+
+            // Đóng modal
+            const modalEl = document.getElementById('customerSearchModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+
+        function clearModalValidation() {
+            ['modalCustomerName', 'modalEmail', 'modalProvince'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('is-invalid');
+            });
+            const errEl = document.getElementById('modalCustomerError');
+            if (errEl) errEl.style.display = 'none';
+        }
+
+        // ===== Ô tìm kiếm khách hàng chính (ngoài modal) =====
+        function onCustomerSearchInput(value) {
+            document.getElementById('selectedCustomerID').value = '0';
+            document.getElementById('selectedCustomerInfo').style.display = 'none';
+
+            const sugDiv = document.getElementById('customerSuggestionsMain');
+            if (!value || value.length < 1) { sugDiv.style.display = 'none'; return; }
+
+            const filtered = allCustomers.filter(c =>
+                c.customerName.toLowerCase().includes(value.toLowerCase()) ||
+                (c.phone && c.phone.includes(value)) ||
+                (c.email && c.email.toLowerCase().includes(value.toLowerCase()))
+            ).slice(0, 20);
+
+            if (!filtered.length) { sugDiv.style.display = 'none'; return; }
+
+            sugDiv.innerHTML = '';
+            filtered.forEach(c => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action py-1';
+                item.innerHTML = `<strong>${c.customerName}</strong>${c.phone ? ' — ' + c.phone : ''}${c.email ? ' | ' + c.email : ''}`;
+                item.onclick = () => selectMainCustomer(c);
+                sugDiv.appendChild(item);
+            });
+            sugDiv.style.display = '';
+        }
+
+        function selectMainCustomer(customer) {
+            document.getElementById('selectedCustomerID').value = customer.customerID;
+            document.getElementById('customerSearchInput').value = customer.customerName;
+            document.getElementById('selectedCustomerName').textContent =
+                `${customer.customerName}${customer.phone ? ' — ' + customer.phone : ''}`;
+            document.getElementById('selectedCustomerInfo').style.display = '';
+            document.getElementById('customerSuggestionsMain').style.display = 'none';
+        }
+
+        function clearSelectedCustomer() {
+            document.getElementById('selectedCustomerID').value = '0';
+            document.getElementById('customerSearchInput').value = '';
+            document.getElementById('selectedCustomerInfo').style.display = 'none';
+        }
+
+        document.addEventListener('click', function(e) {
+            const sug = document.getElementById('customerSuggestionsMain');
+            if (sug && !sug.contains(e.target) && e.target.id !== 'customerSearchInput')
+                sug.style.display = 'none';
+        });
+    </script>
+}

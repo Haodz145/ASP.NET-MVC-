@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Thuộc tính của: Điện thoại di động";
+}
+<div class="box box-primary">
+    <div class="box-body">
+        <div class="alert alert-info">
+            Đang quản lý thuộc tính cho loại hàng: <strong>Điện thoại di động</strong>
+        </div>
+
+        <div class="mb-3 text-right">
+            <a href="~/Category/CreateAttribute/1" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Bổ sung thuộc tính
+            </a>
+            <a href="~/Category" class="btn btn-default">Quay lại danh sách loại hàng</a>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr class="bg-success text-white">
+                    <th>Tên thuộc tính</th>
+                    <th>Thứ tự hiển thị</th>
+                    <th style="width:100px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Màu sắc</td>
+                    <td>1</td>
+                    <td class="text-right">
+                        <a href="~/Category/EditAttribute/1?attributeId=10" class="btn btn-xs btn-info"><i class="fa fa-edit"></i></a>
+                        <a href="~/Category/DeleteAttribute/1?attributeId=10" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dung lượng bộ nhớ</td>
+                    <td>2</td>
+                    <td class="text-right">
+                        <a href="~/Category/EditAttribute/1?attributeId=11" class="btn btn-xs btn-info"><i class="fa fa-edit"></i></a>
+                        <a href="~/Category/DeleteAttribute/1?attributeId=11" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

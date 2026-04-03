@@ -1,0 +1,41 @@
+﻿@using SV22T1020362.Models.Sales
+@model OrderViewInfo
+@{
+    Layout = null;
+}
+<div class="modal-header text-bg-danger">
+    <strong class="modal-title">
+        <i class="bi bi-trash me-2"></i>Xóa đơn hàng
+    </strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    @if (Model != null && Model.Status == OrderStatusEnum.New)
+    {
+        <div class="alert alert-danger d-flex align-items-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Bạn có chắc chắn muốn xóa đơn hàng <strong>#@Model.OrderID</strong> không?
+            Thao tác này không thể hoàn tác.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning d-flex align-items-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Chỉ có thể xóa đơn hàng ở trạng thái <strong>Chờ duyệt</strong>. Đơn hàng này không thể xóa.
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    @if (Model != null && Model.Status == OrderStatusEnum.New)
+    {
+        <form method="post" action="/Order/Delete/@Model.OrderID">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i>Xác nhận xóa
+            </button>
+        </form>
+    }
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>

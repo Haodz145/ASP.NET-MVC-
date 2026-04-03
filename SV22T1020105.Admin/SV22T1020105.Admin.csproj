@@ -1,0 +1,154 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Account\AccessDenied.cshtml" />
+    <Content Remove="Views\Account\ChangePassword.cshtml" />
+    <Content Remove="Views\Account\Login.cshtml" />
+    <Content Remove="Views\Category\Delete.cshtml" />
+    <Content Remove="Views\Category\Edit.cshtml" />
+    <Content Remove="Views\Category\Index.cshtml" />
+    <Content Remove="Views\Category\Search.cshtml" />
+    <Content Remove="Views\Customer\ChangePassword.cshtml" />
+    <Content Remove="Views\Customer\Delete.cshtml" />
+    <Content Remove="Views\Customer\Edit.cshtml" />
+    <Content Remove="Views\Customer\Index.cshtml" />
+    <Content Remove="Views\Customer\Search.cshtml" />
+    <Content Remove="Views\Employee\ChangePassword.cshtml" />
+    <Content Remove="Views\Employee\ChangeRole.cshtml" />
+    <Content Remove="Views\Employee\Delete.cshtml" />
+    <Content Remove="Views\Employee\Edit.cshtml" />
+    <Content Remove="Views\Employee\Index.cshtml" />
+    <Content Remove="Views\Employee\Search.cshtml" />
+    <Content Remove="Views\Home\Index.cshtml" />
+    <Content Remove="Views\Home\Layout.cshtml" />
+    <Content Remove="Views\Home\Privacy.cshtml" />
+    <Content Remove="Views\Order\Accept.cshtml" />
+    <Content Remove="Views\Order\AddOrderItem.cshtml" />
+    <Content Remove="Views\Order\Cancel.cshtml" />
+    <Content Remove="Views\Order\ClearCart.cshtml" />
+    <Content Remove="Views\Order\Create.cshtml" />
+    <Content Remove="Views\Order\Delete.cshtml" />
+    <Content Remove="Views\Order\DeleteCartItem.cshtml" />
+    <Content Remove="Views\Order\DeleteOrderItem.cshtml" />
+    <Content Remove="Views\Order\Detail.cshtml" />
+    <Content Remove="Views\Order\EditCartItem.cshtml" />
+    <Content Remove="Views\Order\EditOrderItem.cshtml" />
+    <Content Remove="Views\Order\Finish.cshtml" />
+    <Content Remove="Views\Order\Index.cshtml" />
+    <Content Remove="Views\Order\Reject.cshtml" />
+    <Content Remove="Views\Order\Search.cshtml" />
+    <Content Remove="Views\Order\SearchProduct.cshtml" />
+    <Content Remove="Views\Order\Shipping.cshtml" />
+    <Content Remove="Views\Order\ShowCart.cshtml" />
+    <Content Remove="Views\Order\_OrderDetails.cshtml" />
+    <Content Remove="Views\Order\_SearchProductInDetail.cshtml" />
+    <Content Remove="Views\Product\Delete.cshtml" />
+    <Content Remove="Views\Product\Edit.cshtml" />
+    <Content Remove="Views\Product\EditAttribute.cshtml" />
+    <Content Remove="Views\Product\EditPhoto.cshtml" />
+    <Content Remove="Views\Product\Index.cshtml" />
+    <Content Remove="Views\Product\ListAttributes.cshtml" />
+    <Content Remove="Views\Product\ListPhotos.cshtml" />
+    <Content Remove="Views\Product\Search.cshtml" />
+    <Content Remove="Views\Shared\Error.cshtml" />
+    <Content Remove="Views\Shared\_Footer.cshtml" />
+    <Content Remove="Views\Shared\_Header.cshtml" />
+    <Content Remove="Views\Shared\_Layout.cshtml" />
+    <Content Remove="Views\Shared\_SideBar.cshtml" />
+    <Content Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <Content Remove="Views\Shipper\Delete.cshtml" />
+    <Content Remove="Views\Shipper\Edit.cshtml" />
+    <Content Remove="Views\Shipper\Index.cshtml" />
+    <Content Remove="Views\Shipper\Search.cshtml" />
+    <Content Remove="Views\Supplier\Delete.cshtml" />
+    <Content Remove="Views\Supplier\Edit.cshtml" />
+    <Content Remove="Views\Supplier\Index.cshtml" />
+    <Content Remove="Views\Supplier\Search.cshtml" />
+    <Content Remove="Views\_ViewImports.cshtml" />
+    <Content Remove="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Account\AccessDenied.cshtml" />
+    <None Include="Views\Account\ChangePassword.cshtml" />
+    <None Include="Views\Account\Login.cshtml" />
+    <None Include="Views\Category\Delete.cshtml" />
+    <None Include="Views\Category\Edit.cshtml" />
+    <None Include="Views\Category\Index.cshtml" />
+    <None Include="Views\Category\Search.cshtml" />
+    <None Include="Views\Customer\ChangePassword.cshtml" />
+    <None Include="Views\Customer\Delete.cshtml" />
+    <None Include="Views\Customer\Edit.cshtml" />
+    <None Include="Views\Customer\Index.cshtml" />
+    <None Include="Views\Customer\Search.cshtml" />
+    <None Include="Views\Employee\ChangePassword.cshtml" />
+    <None Include="Views\Employee\ChangeRole.cshtml" />
+    <None Include="Views\Employee\Delete.cshtml" />
+    <None Include="Views\Employee\Edit.cshtml" />
+    <None Include="Views\Employee\Index.cshtml" />
+    <None Include="Views\Employee\Search.cshtml" />
+    <None Include="Views\Home\Index.cshtml" />
+    <None Include="Views\Home\Privacy.cshtml" />
+    <None Include="Views\Order\Accept.cshtml" />
+    <None Include="Views\Order\AddOrderItem.cshtml" />
+    <None Include="Views\Order\Cancel.cshtml" />
+    <None Include="Views\Order\ClearCart.cshtml" />
+    <None Include="Views\Order\Create.cshtml" />
+    <None Include="Views\Order\Delete.cshtml" />
+    <None Include="Views\Order\DeleteCartItem.cshtml" />
+    <None Include="Views\Order\DeleteOrderItem.cshtml" />
+    <None Include="Views\Order\Detail.cshtml" />
+    <None Include="Views\Order\EditCartItem.cshtml" />
+    <None Include="Views\Order\EditOrderItem.cshtml" />
+    <None Include="Views\Order\Finish.cshtml" />
+    <None Include="Views\Order\Index.cshtml" />
+    <None Include="Views\Order\Reject.cshtml" />
+    <None Include="Views\Order\Search.cshtml" />
+    <None Include="Views\Order\SearchProduct.cshtml" />
+    <None Include="Views\Order\Shipping.cshtml" />
+    <None Include="Views\Order\ShowCart.cshtml" />
+    <None Include="Views\Order\_OrderDetails.cshtml" />
+    <None Include="Views\Order\_SearchProductInDetail.cshtml" />
+    <None Include="Views\Product\Delete.cshtml" />
+    <None Include="Views\Product\Edit.cshtml" />
+    <None Include="Views\Product\EditAttribute.cshtml" />
+    <None Include="Views\Product\EditPhoto.cshtml" />
+    <None Include="Views\Product\Index.cshtml" />
+    <None Include="Views\Product\ListAttributes.cshtml" />
+    <None Include="Views\Product\ListPhotos.cshtml" />
+    <None Include="Views\Product\Search.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_Footer.cshtml" />
+    <None Include="Views\Shared\_Header.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_SideBar.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Views\Shipper\Delete.cshtml" />
+    <None Include="Views\Shipper\Edit.cshtml" />
+    <None Include="Views\Shipper\Index.cshtml" />
+    <None Include="Views\Shipper\Search.cshtml" />
+    <None Include="Views\Supplier\Delete.cshtml" />
+    <None Include="Views\Supplier\Edit.cshtml" />
+    <None Include="Views\Supplier\Index.cshtml" />
+    <None Include="Views\Supplier\Search.cshtml" />
+    <None Include="Views\_ViewImports.cshtml" />
+    <None Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SV22T1020105.BusinessLayers\SV22T1020105.BusinessLayers.csproj" />
+    <ProjectReference Include="..\SV22T1020105.Models\SV22T1020105.Models.csproj" />
+  </ItemGroup>
+
+</Project>

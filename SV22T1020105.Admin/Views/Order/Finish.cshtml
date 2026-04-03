@@ -1,0 +1,33 @@
+﻿@using SV22T1020362.Models.Sales
+@model OrderViewInfo
+@{
+    Layout = null;
+}
+<div class="modal-header text-bg-success">
+    <strong class="modal-title">
+        <i class="bi bi-check-circle-fill me-2"></i>Xác nhận hoàn tất đơn hàng
+    </strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-success d-flex align-items-center">
+        <i class="bi bi-info-circle me-2"></i>
+        Bạn có chắc chắn xác nhận đơn hàng <strong>#@Model?.OrderID</strong> đã được giao thành công?
+    </div>
+    <dl class="row mb-0">
+        <dt class="col-sm-4">Khách hàng</dt>
+        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model?.CustomerName) ? "Chưa có" : Model?.CustomerName)</dd>
+        <dt class="col-sm-4">Người giao hàng</dt>
+        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model?.ShipperName) ? "Chưa có" : Model?.ShipperName)</dd>
+    </dl>
+</div>
+
+<div class="modal-footer">
+    <form method="post" action="/Order/Finish/@Model?.OrderID">
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle-fill me-1"></i>Hoàn tất
+        </button>
+    </form>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>

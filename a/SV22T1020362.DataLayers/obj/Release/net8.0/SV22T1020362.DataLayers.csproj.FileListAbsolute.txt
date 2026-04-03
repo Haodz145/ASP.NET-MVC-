@@ -1,0 +1,15 @@
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\bin\Release\net8.0\SV22T1020362.DataLayers.deps.json
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\bin\Release\net8.0\SV22T1020362.DataLayers.dll
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\bin\Release\net8.0\SV22T1020362.DataLayers.pdb
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\bin\Release\net8.0\SV22T1020362.Models.dll
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\bin\Release\net8.0\SV22T1020362.Models.pdb
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.csproj.AssemblyReference.cache
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.GeneratedMSBuildEditorConfig.editorconfig
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.AssemblyInfoInputs.cache
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.AssemblyInfo.cs
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.csproj.CoreCompileInputs.cache
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T102.6A9D804A.Up2Date
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.dll
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\refint\SV22T1020362.DataLayers.dll
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\SV22T1020362.DataLayers.pdb
+D:\Nam4\HK2\LapTrinhUngDungWeb\BaiTap\SV22T1020362\SV22T1020362.DataLayers\obj\Release\net8.0\ref\SV22T1020362.DataLayers.dll

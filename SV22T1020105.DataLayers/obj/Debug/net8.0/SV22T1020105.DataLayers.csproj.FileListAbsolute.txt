@@ -1,0 +1,5 @@
+D:\LapTrinhWeb\SV22T1020105\SV22T1020105.DataLayers\obj\Debug\net8.0\SV22T1020105.DataLayers.csproj.AssemblyReference.cache
+D:\LapTrinhWeb\SV22T1020105\SV22T1020105.DataLayers\obj\Debug\net8.0\SV22T1020105.DataLayers.GeneratedMSBuildEditorConfig.editorconfig
+D:\LapTrinhWeb\SV22T1020105\SV22T1020105.DataLayers\obj\Debug\net8.0\SV22T1020105.DataLayers.AssemblyInfoInputs.cache
+D:\LapTrinhWeb\SV22T1020105\SV22T1020105.DataLayers\obj\Debug\net8.0\SV22T1020105.DataLayers.AssemblyInfo.cs
+D:\LapTrinhWeb\SV22T1020105\SV22T1020105.DataLayers\obj\Debug\net8.0\SV22T1020105.DataLayers.csproj.CoreCompileInputs.cache

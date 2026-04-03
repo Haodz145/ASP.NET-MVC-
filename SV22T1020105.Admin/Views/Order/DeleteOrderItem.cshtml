@@ -1,0 +1,57 @@
+﻿@using SV22T1020362.Models.Sales
+@model OrderDetailViewInfo
+@{
+    Layout = null;
+    int orderID = ViewBag.OrderID;
+}
+<div class="modal-header text-bg-danger">
+    <strong class="modal-title">Xóa mặt hàng khỏi đơn hàng</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-danger d-flex align-items-center">
+        <i class="bi bi-info-circle me-2"></i>
+        Bạn có chắc muốn xóa mặt hàng <strong>@Model?.ProductName</strong> khỏi đơn hàng không?
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger"
+            onclick="deleteOrderItem(@(Model?.OrderID ?? orderID), @(Model?.ProductID ?? 0))">
+        <i class="bi bi-trash me-1"></i> Xóa
+    </button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>
+
+<script>
+    // TODO: Script này chạy được nhờ execModalScripts() trong site.js
+    // (FIX lỗi "Scripts inserted via innerHTML are not executed")
+
+    /**
+     * Gửi AJAX xóa mặt hàng khỏi đơn hàng,
+     * sau đó đóng modal và reload danh sách mặt hàng.
+     * param {number} orderID - Mã đơn hàng
+     * param {number} productID - Mã mặt hàng cần xóa
+     */
+    function deleteOrderItem(orderID, productID) {
+        fetch(`/Order/DeleteOrderItem?id=${orderID}&productId=${productID}`, {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.code !== 1) {
+                alert(result.message);
+                return;
+            }
+            // Đóng modal
+            const modalEl = document.getElementById('dialogModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            // Reload danh sách mặt hàng
+            if (typeof loadOrderDetails === 'function') loadOrderDetails();
+        })
+        .catch(() => alert('Không thể xóa mặt hàng'));
+    }
+</script>

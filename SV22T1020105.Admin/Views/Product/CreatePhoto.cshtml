@@ -1,0 +1,46 @@
+﻿@{ ViewBag.Title = "Upload ảnh cho sản phẩm"; }
+<div class="box box-primary">
+    <div class="box-body">
+        <form action="~/Product/SavePhoto" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="PhotoID" value="0" />
+            <input type="hidden" name="ProductID" value="1" />
+            
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Chọn ảnh:</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" name="uploadFile" required accept="image/*">
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Mô tả:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="Description" placeholder="Nhập chú thích cho ảnh...">
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Thứ tự hiển thị:</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" name="DisplayOrder" value="1">
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="IsHidden" id="isHidden">
+                        <label class="form-check-label" for="isHidden">Không hiển thị ảnh này</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Upload</button>
+                    <a href="~/Product/ListPhotos/1" class="btn btn-default">Quay lại</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
