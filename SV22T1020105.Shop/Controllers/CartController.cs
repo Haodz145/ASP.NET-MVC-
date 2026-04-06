@@ -15,6 +15,12 @@ namespace SV22T1020105.Shop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
         {
+            if (productId <= 0)
+            {
+                TempData["ErrorMessage"] = "Sản phẩm không hợp lệ";
+                return RedirectToAction("Index", "Product");
+            }
+
             var product = await CatalogDataService.GetProductAsync(productId);
             if (product == null)
             {

@@ -47,7 +47,8 @@ namespace SV22T1020105.Shop.Controllers
             try
             {
                 var userData = User.GetCustomerData();
-                int customerID = int.Parse(userData!.UserId);
+                if (userData == null) return RedirectToAction("Login", "Account");
+                int customerID = int.Parse(userData.UserId);
 
                 // Tạo đơn hàng mới
                 int orderID = await SalesDataService.AddOrderAsync(customerID, deliveryProvince, deliveryAddress);
@@ -97,7 +98,8 @@ namespace SV22T1020105.Shop.Controllers
         public async Task<IActionResult> History()
         {
             var userData = User.GetCustomerData();
-            int customerID = int.Parse(userData!.UserId);
+            if (userData == null) return RedirectToAction("Login", "Account");
+            int customerID = int.Parse(userData.UserId);
             var orders = await SalesDataService.ListOrdersByCustomerAsync(customerID);
             return View(orders);
         }
