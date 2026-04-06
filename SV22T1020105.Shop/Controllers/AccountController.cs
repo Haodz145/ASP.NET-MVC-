@@ -119,7 +119,7 @@ namespace SV22T1020105.Shop.Controllers
                 if (string.IsNullOrEmpty(data.Address)) data.Address = "";
                 data.IsLocked = false;
 
-                int newId = await PartnerDataService.AddCustomerAsync(data);
+                await PartnerDataService.AddCustomerAsync(data);
 
                 // Đặt mật khẩu cho tài khoản vừa tạo
                 await SecurityDataService.ChangeCustomerPasswordAsync(data.Email, CryptHelper.HashMD5(password));

@@ -281,7 +281,8 @@ namespace SV22T1020105.DataLayers.SQLServer
         public async Task<bool> DeleteAsync(int orderID)
         {
             using var connection = GetConnection();
-            var sql = "DELETE FROM Orders WHERE OrderID = @orderID";
+            var sql = @"DELETE FROM OrderDetails WHERE OrderID = @orderID;
+                        DELETE FROM Orders WHERE OrderID = @orderID";
             int rows = await connection.ExecuteAsync(sql, new { orderID });
             return rows > 0;
         }
@@ -413,8 +414,9 @@ namespace SV22T1020105.DataLayers.SQLServer
 
             if (!orderID.HasValue) return true; // Không có giỏ hàng → coi như xóa thành công
 
-            // Xóa OrderDetails và Orders (OrderDetails sẽ xóa cascade)
-            var sql = "DELETE FROM Orders WHERE OrderID = @orderID AND Status = 0";
+            // Xóa OrderDetails và Orders
+            var sql = @"DELETE FROM OrderDetails WHERE OrderID = @orderID;
+                        DELETE FROM Orders WHERE OrderID = @orderID AND Status = 0";
             int rows = await connection.ExecuteAsync(sql, new { orderID });
             return rows > 0;
         }
