@@ -1,0 +1,69 @@
+@model List<SV22T1020105.Models.Sales.OrderViewInfo>
+@{
+    ViewBag.Title = "Lịch sử đơn hàng";
+}
+
+<h4>📋 Lịch sử đơn hàng</h4>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        Bạn chưa có đơn hàng nào. <a asp-controller="Product" asp-action="Index">Mua sắm ngay →</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive mt-3">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Ngày đặt</th>
+                    <th>Địa chỉ giao hàng</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.OrderByDescending(o => o.OrderTime))
+                {
+                    <tr>
+                        <td><strong>#@order.OrderID</strong></td>
+                        <td>@order.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(order.DeliveryAddress))
+                            {
+                                <span>@order.DeliveryAddress, @order.DeliveryProvince</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            @{
+                                string badgeClass = order.Status switch
+                                {
+                                    SV22T1020105.Models.Sales.OrderStatusEnum.New => "bg-warning text-dark",
+                                    SV22T1020105.Models.Sales.OrderStatusEnum.Accepted => "bg-info text-dark",
+                                    SV22T1020105.Models.Sales.OrderStatusEnum.Shipping => "bg-primary",
+                                    SV22T1020105.Models.Sales.OrderStatusEnum.Completed => "bg-success",
+                                    SV22T1020105.Models.Sales.OrderStatusEnum.Cancelled => "bg-secondary",
+                                    SV22T1020105.Models.Sales.OrderStatusEnum.Rejected => "bg-danger",
+                                    _ => "bg-light text-dark"
+                                };
+                            }
+                            <span class="badge @badgeClass">@order.Status.GetDescription()</span>
+                        </td>
+                        <td>
+                            <a asp-controller="Order" asp-action="TrackOrder"
+                               asp-route-id="@order.OrderID" class="btn btn-sm btn-outline-primary">
+                                Chi tiết
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

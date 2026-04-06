@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "gbhOfB967KE=",
+  "dgSpecHash": "yBWHCCQATF0=",
   "success": true,
-  "projectFilePath": "D:\\LapTrinhWeb\\SV22T1020105\\SV22T1020105.Models\\SV22T1020105.Models.csproj",
+  "projectFilePath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Models/SV22T1020105.Models.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Admin\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512"
+    "/home/runner/.nuget/packages/dapper/2.1.72/dapper.2.1.72.nupkg.sha512"
   ],
   "logs": []
 }

@@ -1,0 +1,102 @@
+@model SV22T1020105.Models.Partner.Customer
+@{
+    ViewBag.Title = "Đăng ký tài khoản";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - NTQ Shop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6 col-sm-10">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white text-center py-3">
+                        <h4 class="mb-0">🛍️ NTQ Shop</h4>
+                        <small>Tạo tài khoản mới</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" action="/Account/Register">
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-3">
+                                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" name="CustomerName" value="@Model.CustomerName"
+                                       class="form-control" placeholder="Nhập họ và tên" required />
+                                <span class="text-danger small">
+                                    @(ViewData.ModelState["CustomerName"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" name="Email" value="@Model.Email"
+                                       class="form-control" placeholder="Nhập email" required />
+                                <span class="text-danger small">
+                                    @(ViewData.ModelState["Email"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Điện thoại</label>
+                                <input type="text" name="Phone" value="@Model.Phone"
+                                       class="form-control" placeholder="Nhập số điện thoại" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                <input type="text" name="Province" value="@Model.Province"
+                                       class="form-control" placeholder="Ví dụ: TP. Hồ Chí Minh" required />
+                                <span class="text-danger small">
+                                    @(ViewData.ModelState["Province"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" name="Address" value="@Model.Address"
+                                       class="form-control" placeholder="Nhập địa chỉ" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" name="password"
+                                       class="form-control" placeholder="Ít nhất 6 ký tự" required />
+                                <span class="text-danger small">
+                                    @(ViewData.ModelState["password"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" name="confirmPassword"
+                                       class="form-control" placeholder="Nhập lại mật khẩu" required />
+                                <span class="text-danger small">
+                                    @(ViewData.ModelState["confirmPassword"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                                </span>
+                            </div>
+
+                            @Html.ValidationMessage("Error", new { @class = "text-danger small d-block mb-2" })
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-success">Đăng ký</button>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="text-muted">Đã có tài khoản?</span>
+                                <a asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

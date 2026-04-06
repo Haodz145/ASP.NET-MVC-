@@ -1,0 +1,57 @@
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - NTQ Shop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-5 col-sm-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h4 class="mb-0">🛍️ NTQ Shop</h4>
+                        <small>Đăng nhập tài khoản</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" action="/Account/Login">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="username" value="@ViewBag.UserName"
+                                       class="form-control" placeholder="Nhập email" autofocus required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu</label>
+                                <input type="password" name="password"
+                                       class="form-control" placeholder="Nhập mật khẩu" required />
+                            </div>
+
+                            @Html.ValidationMessage("Error", new { @class = "text-danger small d-block mb-2" })
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="text-muted">Chưa có tài khoản?</span>
+                                <a asp-controller="Account" asp-action="Register">Đăng ký ngay</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

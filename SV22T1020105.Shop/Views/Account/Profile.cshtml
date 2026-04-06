@@ -1,0 +1,68 @@
+@model SV22T1020105.Models.Partner.Customer
+@{
+    ViewBag.Title = "Hồ sơ cá nhân";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">👤 Hồ sơ cá nhân</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Account/Profile">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                        <input type="text" name="CustomerName" value="@Model.CustomerName"
+                               class="form-control" required />
+                        <span class="text-danger small">
+                            @(ViewData.ModelState["CustomerName"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" name="Email" value="@Model.Email"
+                               class="form-control" required />
+                        <span class="text-danger small">
+                            @(ViewData.ModelState["Email"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Điện thoại</label>
+                        <input type="text" name="Phone" value="@Model.Phone" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                        <input type="text" name="Province" value="@Model.Province"
+                               class="form-control" required />
+                        <span class="text-danger small">
+                            @(ViewData.ModelState["Province"]?.Errors.FirstOrDefault()?.ErrorMessage)
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" name="Address" value="@Model.Address" class="form-control" />
+                    </div>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-outline-secondary">
+                            Đổi mật khẩu
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary ms-auto">
+                            Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

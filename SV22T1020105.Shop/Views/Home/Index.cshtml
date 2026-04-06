@@ -1,8 +1,71 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="p-5 mb-4 bg-primary text-white rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="display-5 fw-bold">🛍️ Chào mừng đến NTQ Shop</h1>
+        <p class="col-md-8 fs-5">Mua sắm trực tuyến đơn giản, nhanh chóng và tiện lợi.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-light btn-lg">
+            Mua sắm ngay →
+        </a>
+    </div>
 </div>
+
+<div class="row g-4 mt-2">
+    <div class="col-md-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-4">
+                <div class="display-4 mb-3">🚚</div>
+                <h5>Giao hàng nhanh</h5>
+                <p class="text-muted">Giao hàng toàn quốc, nhanh chóng và an toàn</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-4">
+                <div class="display-4 mb-3">💎</div>
+                <h5>Chất lượng đảm bảo</h5>
+                <p class="text-muted">Sản phẩm chính hãng, kiểm duyệt nghiêm ngặt</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-4">
+                <div class="display-4 mb-3">🔒</div>
+                <h5>Thanh toán an toàn</h5>
+                <p class="text-muted">Bảo mật thông tin, giao dịch an toàn</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+    <h4>🔥 Sản phẩm nổi bật</h4>
+    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary btn-sm">Xem tất cả →</a>
+</div>
+
+<div id="featuredProducts">
+    <partial name="~/Views/Product/_ProductSearchResult.cshtml" />
+</div>
+
+@section Scripts {
+    <script>
+        fetch("/Product/Search?Page=1&PageSize=8&SearchValue=")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("featuredProducts").innerHTML = html;
+            });
+        // Override searchForm for home page
+        window.loadPage = function (page) {
+            fetch("/Product/Search?Page=" + page + "&PageSize=8&SearchValue=")
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById("featuredProducts").innerHTML = html;
+                });
+        }
+    </script>
+}
+

@@ -1,0 +1,135 @@
+@model SV22T1020105.Models.Sales.OrderViewInfo
+@{
+    ViewBag.Title = $"Theo dõi đơn hàng #{Model.OrderID}";
+    var details = ViewBag.Details as List<SV22T1020105.Models.Sales.OrderDetailViewInfo> ?? new();
+    decimal total = details.Sum(x => x.Quantity * x.SalePrice);
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>🚚 Theo dõi đơn hàng <span class="text-primary">#@Model.OrderID</span></h4>
+            <a asp-controller="Order" asp-action="History" class="btn btn-outline-secondary btn-sm">← Quay lại</a>
+        </div>
+
+        <!-- Tiến trình đơn hàng -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between text-center position-relative">
+                    @{
+                        int statusVal = (int)Model.Status;
+                        bool cancelled = statusVal < 0;
+                    }
+                    @{
+                        string StepClass(int step) => (cancelled || statusVal < step) ? "text-muted" :
+                            (statusVal == step ? "text-primary fw-bold" : "text-success");
+                        string CircleClass(int step) => (cancelled || statusVal < step) ? "bg-secondary" :
+                            (statusVal == step ? "bg-primary" : "bg-success");
+                    }
+                    <div class="@StepClass(1) flex-fill">
+                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center mx-auto mb-1 @CircleClass(1)" style="width:36px;height:36px;">1</div>
+                        <small>Chờ duyệt</small>
+                    </div>
+                    <div class="@StepClass(2) flex-fill">
+                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center mx-auto mb-1 @CircleClass(2)" style="width:36px;height:36px;">2</div>
+                        <small>Đã duyệt</small>
+                    </div>
+                    <div class="@StepClass(3) flex-fill">
+                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center mx-auto mb-1 @CircleClass(3)" style="width:36px;height:36px;">3</div>
+                        <small>Đang giao</small>
+                    </div>
+                    <div class="@StepClass(4) flex-fill">
+                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center mx-auto mb-1 @CircleClass(4)" style="width:36px;height:36px;">4</div>
+                        <small>Hoàn tất</small>
+                    </div>
+                </div>
+                @if (cancelled)
+                {
+                    <div class="text-center mt-2">
+                        <span class="badge bg-danger fs-6">@Model.Status.GetDescription()</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Thông tin đơn hàng -->
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-light"><strong>Thông tin đơn hàng</strong></div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Ngày đặt:</div>
+                    <div class="col-7">@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                @if (Model.AcceptTime.HasValue)
+                {
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Ngày duyệt:</div>
+                        <div class="col-7">@Model.AcceptTime.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                }
+                @if (Model.ShippedTime.HasValue)
+                {
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Ngày giao:</div>
+                        <div class="col-7">@Model.ShippedTime.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                }
+                @if (Model.FinishedTime.HasValue)
+                {
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Ngày kết thúc:</div>
+                        <div class="col-7">@Model.FinishedTime.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.DeliveryAddress))
+                {
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Địa chỉ giao:</div>
+                        <div class="col-7">@Model.DeliveryAddress, @Model.DeliveryProvince</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.ShipperName))
+                {
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted">Người giao hàng:</div>
+                        <div class="col-7">@Model.ShipperName (@Model.ShipperPhone)</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light"><strong>Chi tiết sản phẩm</strong></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">SL</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in details)
+                        {
+                            <tr>
+                                <td>@item.ProductName <small class="text-muted">(@item.Unit)</small></td>
+                                <td class="text-center">@item.Quantity</td>
+                                <td class="text-end">@item.SalePrice.ToString("N0") đ</td>
+                                <td class="text-end">@((item.Quantity * item.SalePrice).ToString("N0")) đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                            <td class="text-end fw-bold text-danger">@total.ToString("N0") đ</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

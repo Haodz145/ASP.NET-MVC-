@@ -1,0 +1,76 @@
+@model SV22T1020105.Models.Common.PagedResult<SV22T1020105.Models.Catalog.Product>
+@{
+    Layout = null;
+}
+
+@if (!Model.DataItems.Any())
+{
+    <div class="alert alert-info">Không tìm thấy sản phẩm nào.</div>
+}
+else
+{
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+        @foreach (var p in Model.DataItems)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductID">
+                        <img src="~/images/products/@(p.Photo ?? "nophoto.png")"
+                             class="card-img-top" style="height:180px;object-fit:cover;"
+                             onerror="this.src='/images/products/nophoto.png'" alt="@p.ProductName" />
+                    </a>
+                    <div class="card-body d-flex flex-column">
+                        <a class="text-decoration-none text-dark" asp-controller="Product"
+                           asp-action="Detail" asp-route-id="@p.ProductID">
+                            <h6 class="card-title">@p.ProductName</h6>
+                        </a>
+                        <p class="text-muted small mb-1">@p.Unit</p>
+                        <p class="fw-bold text-danger mb-2">@p.Price.ToString("N0") đ</p>
+                        <form method="post" action="/Cart/AddToCart" class="mt-auto">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@p.ProductID" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-sm btn-primary w-100">🛒 Thêm vào giỏ</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Model.PageCount > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                @foreach (var page in Model.GetDisplayPages())
+                {
+                    @if (page.Page == 0)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                    else
+                    {
+                        int pg = page.Page;
+                        <li class="page-item @(page.IsCurrent ? "active" : "")">
+                            <a class="page-link" href="javascript:;" onclick="loadPage(@pg)">@pg</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </nav>
+        <script>
+            function loadPage(page) {
+                const form = document.getElementById("searchForm");
+                const params = new URLSearchParams(new FormData(form));
+                params.set("Page", page);
+                fetch("/Product/Search?" + params.toString())
+                    .then(r => r.text())
+                    .then(html => {
+                        document.getElementById("searchResult").innerHTML = html;
+                    });
+            }
+        </script>
+    }
+
+    <p class="text-muted small mt-2">Tìm thấy @Model.RowCount sản phẩm</p>
+}
