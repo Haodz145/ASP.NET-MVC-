@@ -1,0 +1,53 @@
+@model SV22T1020105.Models.Catalog.ProductSearchInput
+@{
+    ViewBag.Title = "Sản phẩm";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h4>🏪 Danh sách sản phẩm</h4>
+    </div>
+</div>
+
+<form method="get" action="/Product/Search" id="searchForm">
+    <div class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="SearchValue" value="@Model.SearchValue"
+                   class="form-control" placeholder="🔍 Tìm sản phẩm..." />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="MinPrice" value="@(Model.MinPrice > 0 ? Model.MinPrice : null)"
+                   class="form-control" placeholder="Giá từ" min="0" />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="MaxPrice" value="@(Model.MaxPrice > 0 ? Model.MaxPrice : null)"
+                   class="form-control" placeholder="Giá đến" min="0" />
+        </div>
+        <input type="hidden" name="Page" value="1" />
+        <input type="hidden" name="PageSize" value="@Model.PageSize" />
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+        </div>
+        <div class="col-md-2">
+            <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary w-100">Xóa bộ lọc</a>
+        </div>
+    </div>
+</form>
+
+<div id="searchResult">
+    <partial name="_ProductSearchResult" />
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("searchForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const form = e.target;
+            fetch(form.action + "?" + new URLSearchParams(new FormData(form)))
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById("searchResult").innerHTML = html;
+                });
+        });
+    </script>
+}

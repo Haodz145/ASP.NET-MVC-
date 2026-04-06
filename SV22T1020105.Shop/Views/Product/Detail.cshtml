@@ -1,0 +1,84 @@
+@model SV22T1020105.Models.Catalog.Product
+@{
+    ViewBag.Title = Model.ProductName;
+    var photos = ViewBag.Photos as List<SV22T1020105.Models.Catalog.ProductPhoto> ?? new();
+    var attributes = ViewBag.Attributes as List<SV22T1020105.Models.Catalog.ProductAttribute> ?? new();
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item active">@Model.ProductName</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <!-- Ảnh sản phẩm -->
+    <div class="col-md-5">
+        @{
+            var mainPhoto = photos.OrderBy(p => p.DisplayOrder).FirstOrDefault();
+            string mainSrc = mainPhoto != null ? $"/images/products/{mainPhoto.Photo}" : $"/images/products/{Model.Photo ?? "nophoto.png"}";
+        }
+        <img src="@mainSrc" id="mainPhoto" class="img-fluid rounded shadow w-100"
+             style="max-height:400px;object-fit:contain;" onerror="this.src='/images/products/nophoto.png'" />
+
+        @if (photos.Count > 1)
+        {
+            <div class="d-flex gap-2 mt-2 flex-wrap">
+                @foreach (var ph in photos.Where(p => !p.IsHidden).OrderBy(p => p.DisplayOrder))
+                {
+                    <img src="/images/products/@ph.Photo" class="rounded border"
+                         style="width:60px;height:60px;object-fit:cover;cursor:pointer;"
+                         onclick="document.getElementById('mainPhoto').src=this.src" />
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Thông tin sản phẩm -->
+    <div class="col-md-7">
+        <h3>@Model.ProductName</h3>
+        <p class="text-muted">Đơn vị: <strong>@Model.Unit</strong></p>
+        <h4 class="text-danger fw-bold">@Model.Price.ToString("N0") đ</h4>
+
+        @if (attributes.Any())
+        {
+            <div class="mt-3 mb-3">
+                <h6>Thông số kỹ thuật:</h6>
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        @foreach (var attr in attributes.OrderBy(a => a.DisplayOrder))
+                        {
+                            <tr>
+                                <td class="text-muted w-40">@attr.AttributeName</td>
+                                <td><strong>@attr.AttributeValue</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <form method="post" action="/Cart/AddToCart" class="d-flex gap-2 align-items-center mt-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productId" value="@Model.ProductID" />
+            <input type="number" name="quantity" value="1" min="1" class="form-control" style="width:90px;" />
+            <button type="submit" class="btn btn-primary btn-lg">🛒 Thêm vào giỏ hàng</button>
+        </form>
+
+        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary mt-3">
+            ← Tiếp tục mua sắm
+        </a>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ProductDescription))
+{
+    <div class="mt-4">
+        <h5>Mô tả sản phẩm</h5>
+        <div class="p-3 bg-light rounded">
+            @Html.Raw(Model.ProductDescription)
+        </div>
+    </div>
+}
