@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SV22T1020105.DataLayers")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b33a5412f9ac9629dbfa5bfe44c07cfe17fc4e82")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9a52ee468707eb746ec293398e4a990203ec1c7")]
 [assembly: System.Reflection.AssemblyProductAttribute("SV22T1020105.DataLayers")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SV22T1020105.DataLayers")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

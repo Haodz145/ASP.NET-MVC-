@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "K206xIGqGng=",
+  "dgSpecHash": "E9pNnym7mgM=",
   "success": true,
-  "projectFilePath": "D:\\Nam4\\HK2\\LapTrinhUngDungWeb\\BaiTap\\SV22T1020362\\SV22T1020362.Models\\SV22T1020362.Models.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/a/SV22T1020362.Models/SV22T1020362.Models.csproj",
+  "expectedPackageFiles": [
+    "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages/microsoft.netcore.app.ref/8.0.25/microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
+    "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages/microsoft.aspnetcore.app.ref/8.0.25/microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512"
+  ],
   "logs": []
 }
