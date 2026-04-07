@@ -48,23 +48,25 @@
 </div>
 
 <div id="featuredProducts">
-    <partial name="~/Views/Product/_ProductSearchResult.cshtml" />
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Đang tải...</span>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        fetch("/Product/Search?Page=1&PageSize=8&SearchValue=")
-            .then(r => r.text())
-            .then(html => {
-                document.getElementById("featuredProducts").innerHTML = html;
-            });
-        // Override searchForm for home page
-        window.loadPage = function (page) {
+        function loadFeatured(page) {
             fetch("/Product/Search?Page=" + page + "&PageSize=8&SearchValue=")
                 .then(r => r.text())
                 .then(html => {
                     document.getElementById("featuredProducts").innerHTML = html;
                 });
+        }
+        loadFeatured(1);
+        window.loadPage = function (page) {
+            loadFeatured(page);
         }
     </script>
 }

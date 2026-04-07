@@ -35,19 +35,38 @@
 </form>
 
 <div id="searchResult">
-    <partial name="_ProductSearchResult" />
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Đang tải...</span>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        document.getElementById("searchForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-            const form = e.target;
-            fetch(form.action + "?" + new URLSearchParams(new FormData(form)))
+        function doSearch(params) {
+            fetch("/Product/Search?" + params)
                 .then(r => r.text())
                 .then(html => {
                     document.getElementById("searchResult").innerHTML = html;
                 });
+        }
+
+        // Load on page open
+        doSearch(new URLSearchParams(new FormData(document.getElementById("searchForm"))));
+
+        // On form submit
+        document.getElementById("searchForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            doSearch(new URLSearchParams(new FormData(e.target)));
         });
+
+        // Pagination
+        window.loadPage = function (page) {
+            const form = document.getElementById("searchForm");
+            const params = new URLSearchParams(new FormData(form));
+            params.set("Page", page);
+            doSearch(params);
+        }
     </script>
 }

@@ -30,7 +30,7 @@ namespace SV22T1020105.Shop.Controllers
         {
             var result = await CatalogDataService.ListProductsAsync(input);
             ApplicationContext.SetSessionData(SEARCH_PRODUCT, input);
-            return View(result);
+            return PartialView("_ProductSearchResult", result);
         }
 
         public async Task<IActionResult> Detail(int id)

@@ -58,18 +58,6 @@ else
                 }
             </ul>
         </nav>
-        <script>
-            function loadPage(page) {
-                const form = document.getElementById("searchForm");
-                const params = new URLSearchParams(new FormData(form));
-                params.set("Page", page);
-                fetch("/Product/Search?" + params.toString())
-                    .then(r => r.text())
-                    .then(html => {
-                        document.getElementById("searchResult").innerHTML = html;
-                    });
-            }
-        </script>
     }
 
     <p class="text-muted small mt-2">Tìm thấy @Model.RowCount sản phẩm</p>
