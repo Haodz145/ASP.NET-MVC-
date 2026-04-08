@@ -71,8 +71,7 @@
                             <div class="row mb-3">
                                 <label class="col-md-2 col-form-label">Khách hàng</label>
                                 <div class="col-md-10">
-                                    <input type="hidden" id="selectedCustomerID" name="customerID" value="0" />
-                                    <!-- Ô nhập tìm kiếm khách hàng có gợi ý dropdown -->
+                            <!-- Ô nhập tìm kiếm khách hàng có gợi ý dropdown -->
                                     <div class="position-relative">
                                         <div class="input-group">
                                             <input type="text"
@@ -192,7 +191,7 @@
                         </label>
                         <select id="modalProvince" class="form-select">
                             @{
-                                var provinces = await SV22T1020362.BusinessLayers.DictionaryDataService.ListProvincesAsync();
+                                var provinces = await SV22T1020105.BusinessLayers.DictionaryDataService.ListProvincesAsync();
                             }
                             <option value="">-- Tỉnh/Thành phố --</option>
                             @foreach (var p in provinces)

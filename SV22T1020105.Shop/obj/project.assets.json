@@ -1339,7 +1339,7 @@
     ]
   },
   "packageFolders": {
-    "/home/runner/.nuget/packages/": {}
+    "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -1347,7 +1347,7 @@
       "projectUniqueName": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Shop/SV22T1020105.Shop.csproj",
       "projectName": "SV22T1020105.Shop",
       "projectPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Shop/SV22T1020105.Shop.csproj",
-      "packagesPath": "/home/runner/.nuget/packages/",
+      "packagesPath": "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages",
       "outputPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Shop/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
@@ -1408,6 +1408,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"

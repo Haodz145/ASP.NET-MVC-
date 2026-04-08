@@ -14,8 +14,9 @@
 
         <div class="row mt-2">
             <div class="col-4">
-                <img src="~/images/products/@item.Photo"
-                     class="img-fluid border" style="max-height:100px" />
+                <img src="/images/products/@(item.Photo ?? "nophoto.png")"
+                     class="img-fluid border" style="max-height:100px"
+                     onerror="this.onerror=null;this.src='/images/products/nophoto.png';" />
             </div>
             <div class="col-8">
                 <div class="row g-2">

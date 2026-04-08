@@ -1,4 +1,4 @@
-﻿@using SV22T1020362.Models.Sales
+﻿@using SV22T1020105.Models.Sales
 @model OrderViewInfo
 @{
     ViewBag.Title = "Chi tiết đơn hàng";
@@ -303,7 +303,7 @@
                         <label class="form-label fw-semibold">Tỉnh/Thành <span class="text-danger">*</span></label>
                         <select id="dcProvince" class="form-select">
                             @{
-                                var provincesDetail = await SV22T1020362.BusinessLayers.DictionaryDataService.ListProvincesAsync();
+                                var provincesDetail = await SV22T1020105.BusinessLayers.DictionaryDataService.ListProvincesAsync();
                             }
                             <option value="">-- Tỉnh/Thành phố --</option>
                             @foreach (var p in provincesDetail)
@@ -391,7 +391,7 @@
                     <select id="daProvince" class="form-select">
                         <option value="">-- Tỉnh/Thành phố --</option>
                         @{
-                            var provincesDelivery = await SV22T1020362.BusinessLayers.DictionaryDataService.ListProvincesAsync();
+                            var provincesDelivery = await SV22T1020105.BusinessLayers.DictionaryDataService.ListProvincesAsync();
                         }
                         @foreach (var p in provincesDelivery)
                         {

@@ -25,7 +25,7 @@
                     // Shop nằm cùng cấp với Admin
                     string contentRoot = ApplicationContext.ApplicationRootPath;
                     string solutionDir = Path.GetFullPath(Path.Combine(contentRoot, ".."));
-                    shopWwwRoot = Path.Combine(solutionDir, "SV22T1020362.Shop", "wwwroot");
+                    shopWwwRoot = Path.Combine(solutionDir, "SV22T1020105.Shop", "wwwroot");
                 }
 
                 string destDir = Path.Combine(shopWwwRoot, "images", subFolder);

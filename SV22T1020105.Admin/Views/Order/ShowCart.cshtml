@@ -43,12 +43,12 @@
                         <td class="text-end text-nowrap">
                             <!-- Mở modal chỉnh sửa số lượng / giá -->
                             <a class="btn btn-sm btn-primary open-modal"
-                               href="~/Order/EditCartItem?productId=@item.ProductID" onclick="openModal(event, this)">
+                               href="/Order/EditCartItem?productId=@item.ProductID" onclick="openModal(event, this)">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             <!-- Mở modal xác nhận xóa khỏi giỏ -->
                             <a class="btn btn-sm btn-danger open-modal"
-                               href="~/Order/DeleteCartItem?productId=@item.ProductID" onclick="openModal(event, this)">
+                               href="/Order/DeleteCartItem?productId=@item.ProductID" onclick="openModal(event, this)">
                                 <i class="bi bi-dash"></i>
                             </a>
                         </td>
@@ -67,7 +67,7 @@
         <div class="text-end">
             <!-- Mở modal xác nhận xóa toàn bộ giỏ hàng -->
             <a class="btn btn-sm btn-danger mt-2 open-modal" onclick="openModal(event, this)"
-               href="~/Order/ClearCart">
+               href="/Order/ClearCart">
                 <i class="bi bi-trash"></i>
                 Xóa giỏ hàng
             </a>
