@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Admin/SV22T1020105.Admin.csproj",
         "projectName": "SV22T1020105.Admin",
         "projectPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Admin/SV22T1020105.Admin.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Admin/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -71,6 +71,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.linux-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -89,7 +103,7 @@
         "projectUniqueName": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.BusinessLayers/SV22T1020105.BusinessLayers.csproj",
         "projectName": "SV22T1020105.BusinessLayers",
         "projectPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.BusinessLayers/SV22T1020105.BusinessLayers.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.BusinessLayers/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -146,6 +160,16 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -161,7 +185,7 @@
         "projectUniqueName": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.DataLayers/SV22T1020105.DataLayers.csproj",
         "projectName": "SV22T1020105.DataLayers",
         "projectPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.DataLayers/SV22T1020105.DataLayers.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.DataLayers/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -219,6 +243,16 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -234,7 +268,7 @@
         "projectUniqueName": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Models/SV22T1020105.Models.csproj",
         "projectName": "SV22T1020105.Models",
         "projectPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Models/SV22T1020105.Models.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-3f95eab82bf14e19/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/ASP.NET-MVC-/ASP.NET-MVC-/SV22T1020105.Models/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -284,6 +318,16 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
